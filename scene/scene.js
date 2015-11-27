@@ -12,10 +12,16 @@ acid.define([], function() {
 	//----------------------
 	// scene..
 	//----------------------
-	
-	var scene  = new THREE.Scene();	
+	var scenes = {
+		default    : new THREE.Scene(),
+		reflection : new THREE.Scene()
+	}
 	var camera = new THREE.PerspectiveCamera( 90, 1, 0.1, 1000 );
 	var targets = {
+		reflection: new THREE.WebGLRenderTarget(width, height, {
+			minFilter: THREE.LinearFilter,
+			maxFilter: THREE.LinearFilter
+		}),		
 		output: new THREE.WebGLRenderTarget(width, height, {
 			minFilter: THREE.LinearFilter,
 			maxFilter: THREE.LinearFilter
@@ -54,13 +60,20 @@ acid.define([], function() {
 			 								  "scene/assets/wall.jpg"])
 			.then(function(textures) {
 				// scene..							 					   				
-				scene.add(new THREE.Mesh(models[0].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF, map: textures[0] } )))
-				scene.add(new THREE.Mesh(models[1].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF, map: textures[1] } )))
-				scene.add(new THREE.Mesh(models[2].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF, map: textures[2] } )))
-				scene.add(new THREE.Mesh(models[3].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF } )))
+				scenes.default.add(new THREE.Mesh(models[0].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF, map: textures[0] } )))
+				scenes.default.add(new THREE.Mesh(models[1].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF, map: textures[1] } )))
+				scenes.default.add(new THREE.Mesh(models[2].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF, map: textures[2] } )))
+				scenes.default.add(new THREE.Mesh(models[3].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF } )))
+				
+				// reflection							 					   				
+				scenes.reflection.add(new THREE.Mesh(models[0].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF, map: textures[0], side: THREE.DoubleSide } )))
+				scenes.reflection.add(new THREE.Mesh(models[2].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF, map: textures[2], side: THREE.DoubleSide } )))
+				scenes.reflection.add(new THREE.Mesh(models[3].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF, side: THREE.DoubleSide } )))				
 		});			
 	});
 	
+	
+	var count = 0;
 	return {
 		update : function(time) {
 			var state = animation.get(time, true)
@@ -75,7 +88,7 @@ acid.define([], function() {
 				Math.sin((angle) * (Math.PI / 180)) * 1.5)
 				
 				camera.position.set(position.x,  position.y, position.z);
-				camera.up = new THREE.Vector3(0, 1, 0)
+				camera.up = new THREE.Vector3(0.5, 1, 0)
 				camera.lookAt(lookat);
 			
 			if(acid.input.gamepad.enabled) 
@@ -84,7 +97,10 @@ acid.define([], function() {
 				angle += 0.05			
 		},
 		render : function(app) {
-			app.renderer.render(scene, camera, targets.output, true)
+			app.renderer.render(scenes.reflection, 
+			acid.graphics.cameras.reflect(camera, 
+				new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)), targets.reflection, true)				
+					app.renderer.render(scenes.default, camera, targets.output, true)
 			return targets;
 		}
 	}

@@ -507,6 +507,37 @@ var acid;
         animation.Animation = Animation;
     })(animation = acid.animation || (acid.animation = {}));
 })(acid || (acid = {}));
+var acid;
+(function (acid) {
+    var graphics;
+    (function (graphics) {
+        var math;
+        (function (math) {
+            function createReflectionMatrix(plane) {
+                var n = plane.normalize();
+                var m = new THREE.Matrix4();
+                var m11 = 1.0 - 2.0 * n.normal.x * n.normal.x;
+                var m12 = 2.0 * n.normal.x * n.normal.y;
+                var m13 = 2.0 * n.normal.x * n.normal.z;
+                var m14 = 0.0;
+                var m21 = -2.0 * n.normal.x * n.normal.y;
+                var m22 = 1.0 - 2.0 * n.normal.y * n.normal.y;
+                var m23 = -2.0 * n.normal.y * n.normal.z;
+                var m24 = 0.0;
+                var m31 = -2.0 * n.normal.z * n.normal.x;
+                var m32 = -2.0 * n.normal.z * n.normal.y;
+                var m33 = 1.0 - 2.0 * n.normal.z * n.normal.z;
+                var m34 = 0.0;
+                var m41 = -2.0 * n.constant * n.normal.x;
+                var m42 = -2.0 * n.constant * n.normal.y;
+                var m43 = -2.0 * n.constant * n.normal.z;
+                var m44 = 1.0;
+                return m.set(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44).scale(new THREE.Vector3(1, 1, 1));
+            }
+            math.createReflectionMatrix = createReflectionMatrix;
+        })(math = graphics.math || (graphics.math = {}));
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -836,6 +867,26 @@ var acid;
             }
             assets.load = load;
         })(assets = graphics.assets || (graphics.assets = {}));
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
+    var graphics;
+    (function (graphics) {
+        var cameras;
+        (function (cameras) {
+            function reflect(camera, plane) {
+                var reflect = camera.clone();
+                reflect.matrixAutoUpdate = false;
+                reflect.matrix.identity();
+                reflect.matrix.multiply(acid.graphics.math.createReflectionMatrix(plane));
+                reflect.matrix.multiply(camera.matrix);
+                reflect.updateProjectionMatrix();
+                reflect.updateMatrixWorld(true);
+                return reflect;
+            }
+            cameras.reflect = reflect;
+        })(cameras = graphics.cameras || (graphics.cameras = {}));
     })(graphics = acid.graphics || (acid.graphics = {}));
 })(acid || (acid = {}));
 var acid;

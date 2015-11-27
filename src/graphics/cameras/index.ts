@@ -26,13 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-/// <reference path="math/index.ts" />
-/// <reference path="targets/index.ts" />
-/// <reference path="effects/index.ts" />
-/// <reference path="canvas/index.ts" />
-/// <reference path="assets/index.ts" />
-/// <reference path="cameras/index.ts" />
-
-/// <reference path="Element.ts" />
-/// <reference path="Renderer.ts" />
-/// <reference path="App.ts" />
+/// <reference path="Functions.ts" />

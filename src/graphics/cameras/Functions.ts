@@ -26,13 +26,26 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-/// <reference path="math/index.ts" />
-/// <reference path="targets/index.ts" />
-/// <reference path="effects/index.ts" />
-/// <reference path="canvas/index.ts" />
-/// <reference path="assets/index.ts" />
-/// <reference path="cameras/index.ts" />
+/// <reference path="../../typings.ts" />
+/// <reference path= "../math/Functions.ts" />
 
-/// <reference path="Element.ts" />
-/// <reference path="Renderer.ts" />
-/// <reference path="App.ts" />
+module acid.graphics.cameras {
+	
+	/**
+	 * mirrors this camera about a plane.
+	 * @param camera {THREE.Camera} the camera to mirror
+	 * @param plane {THREE.Plane} the plane to mirror against.
+	 * @returns {THREE.Camera} a new camera mirrored against this plane.
+	 */
+	export function reflect(camera: THREE.PerspectiveCamera, plane: THREE.Plane) : THREE.Camera {
+		var reflect = camera.clone()
+		reflect.matrixAutoUpdate = false;
+		reflect.matrix.identity()
+		reflect.matrix.multiply(acid.graphics.math.createReflectionMatrix(plane))
+		//reflect.matrix.multiply(camera.matrix.scale(new THREE.Vector3(-1, -1, 1)))
+		reflect.matrix.multiply(camera.matrix)
+		reflect.updateProjectionMatrix();
+		reflect.updateMatrixWorld(true);
+		return reflect;
+	}
+}

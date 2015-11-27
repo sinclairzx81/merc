@@ -105,6 +105,9 @@ declare module acid.animation {
         get(millisecond: number, repeat: boolean): T;
     }
 }
+declare module acid.graphics.math {
+    function createReflectionMatrix(plane: THREE.Plane): THREE.Matrix4;
+}
 declare module acid.graphics.targets {
     class Target extends THREE.WebGLRenderTarget {
         constructor(width: number, height: number, options?: THREE.WebGLRenderTargetOptions);
@@ -170,6 +173,9 @@ declare module acid.graphics.canvas {
 }
 declare module acid.graphics.assets {
     function load(type: string, urls: string[]): acid.Task<any>;
+}
+declare module acid.graphics.cameras {
+    function reflect(camera: THREE.PerspectiveCamera, plane: THREE.Plane): THREE.Camera;
 }
 declare module acid.graphics {
     class Element extends acid.Events {
