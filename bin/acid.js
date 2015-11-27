@@ -532,7 +532,7 @@ var acid;
                 var m42 = -2.0 * n.constant * n.normal.y;
                 var m43 = -2.0 * n.constant * n.normal.z;
                 var m44 = 1.0;
-                return m.set(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44).scale(new THREE.Vector3(1, 1, 1));
+                return m.set(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44);
             }
             math.createReflectionMatrix = createReflectionMatrix;
         })(math = graphics.math || (graphics.math = {}));

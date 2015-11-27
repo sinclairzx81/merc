@@ -35,25 +35,6 @@ module acid.graphics.math {
 	export function createReflectionMatrix(plane: THREE.Plane) : THREE.Matrix4 {
 		var n = plane.normalize()
 		var m = new THREE.Matrix4()
-		/*
-		return m.set(
-			1.0 - 2.0 * n.normal.x * n.normal.x, // negated?
-			2.0 * n.normal.x * n.normal.y,
-			2.0 * n.normal.x * n.normal.z,
-			0.0,
-			-2.0 * n.normal.x * n.normal.y,
-			1.0 - 2.0 * n.normal.y * n.normal.y,
-			-2.0 * n.normal.y * n.normal.z,
-			0.0,
-			-2.0 * n.normal.z * n.normal.x,
-			-2.0 * n.normal.z * n.normal.y,
-			1.0 - 2.0 * n.normal.z * n.normal.z,
-			0.0, 
-			-2.0 * n.constant * n.normal.x,
-			-2.0 * n.constant * n.normal.y,
-			-2.0 * n.constant * n.normal.z,
-			1.0).scale(new THREE.Vector3(-1, 1, 1)); 
-		*/ 	
 		var m11 =  1.0 - 2.0 * n.normal.x * n.normal.x;
 		var m12 =  2.0       * n.normal.x * n.normal.y;
 		var m13 =  2.0       * n.normal.x * n.normal.z;
@@ -70,14 +51,9 @@ module acid.graphics.math {
 		var m42 = -2.0 * n.constant * n.normal.y;
 		var m43 = -2.0 * n.constant * n.normal.z;
 		var m44 =  1.0;
-		
 		return m.set(m11, m12, m13, m14,
 					 m21, m22, m23, m24,
 					 m31, m32, m33, m34,
-					 m41, m42, m43, m44).scale(new THREE.Vector3(1, 1, 1));
-		
-		
-					 
-					 
+					 m41, m42, m43, m44);			 
 	}
 }
