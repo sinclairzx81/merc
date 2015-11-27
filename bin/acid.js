@@ -950,6 +950,25 @@ var acid;
 })(acid || (acid = {}));
 var acid;
 (function (acid) {
+    var graphics;
+    (function (graphics) {
+        function app(elementid, callback) {
+            acid.ready(function () {
+                var domelement = document.getElementById(elementid);
+                var element = new acid.graphics.Element(domelement);
+                var renderer = new acid.graphics.Renderer(element);
+                acid.loop.start();
+                callback({
+                    element: element,
+                    renderer: renderer,
+                });
+            });
+        }
+        graphics.app = app;
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var loaded = false;
     window.addEventListener("load", function () { return loaded = true; });
     function ready(callback) {
@@ -961,17 +980,4 @@ var acid;
         }
     }
     acid.ready = ready;
-    function app(elementid, callback) {
-        ready(function () {
-            var domelement = document.getElementById(elementid);
-            var element = new acid.graphics.Element(domelement);
-            var renderer = new acid.graphics.Renderer(element);
-            acid.loop.start();
-            callback({
-                element: element,
-                renderer: renderer,
-            });
-        });
-    }
-    acid.app = app;
 })(acid || (acid = {}));

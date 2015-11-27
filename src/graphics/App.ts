@@ -26,38 +26,28 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-/// <reference path="loop/index.ts" />
-/// <reference path="graphics/index.ts" />
+/// <reference path="../loop/index.ts" />
+/// <reference path="Element.ts" />
+/// <reference path="Renderer.ts" />
 
-module acid {
+module acid.graphics {
 	
-	export interface App {
+	/**
+	 * IApp: provides a element and rendering context.
+	 */
+	export interface IApp {
 		element : acid.graphics.Element,
 		renderer: acid.graphics.Renderer
 	}
 	
 	/**
-	 * provides a callback once this dom is ready.
-	 */
-	var loaded = false;
-	window.addEventListener("load", () => loaded = true)
-	export function ready(callback: () => void) : void {
-		if(!loaded) {
-			window.addEventListener("load", callback, false)
-		}
-		else {
-			callback()
-		}		
-	}
-	
-	/**
 	 * creates a new rendering instance.
 	 */
-	export function app(elementid: string, callback:(app: App) => void) {
+	export function app(elementid: string, callback:(app: IApp) => void) {
 		ready(() => {
-			var domelement    = document.getElementById(elementid);
-			var element  = new acid.graphics.Element(domelement);
-			var renderer = new acid.graphics.Renderer(element)
+			var domelement = document.getElementById(elementid);
+			var element    = new acid.graphics.Element(domelement);
+			var renderer   = new acid.graphics.Renderer(element)
 			acid.loop.start()
 			callback({
 				element : element,

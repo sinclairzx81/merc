@@ -32,4 +32,20 @@ THE SOFTWARE.
 /// <reference path="input/index.ts" />
 /// <reference path="animation/index.ts" />
 /// <reference path="graphics/index.ts" />
-/// <reference path="App.ts" />
+
+module acid {
+	/**
+	* provides a callback once this dom is ready.
+	*/
+	var loaded = false;
+	window.addEventListener("load", () => loaded = true)
+	export function ready(callback: () => void) : void {
+		if(!loaded) {
+			window.addEventListener("load", callback, false)
+		}
+		else {
+			callback()
+		}		
+	}	
+}
+

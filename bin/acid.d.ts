@@ -193,11 +193,13 @@ declare module acid.graphics {
         output(texture: THREE.Texture | THREE.WebGLRenderTarget, crop: boolean): void;
     }
 }
-declare module acid {
-    interface App {
+declare module acid.graphics {
+    interface IApp {
         element: acid.graphics.Element;
         renderer: acid.graphics.Renderer;
     }
+    function app(elementid: string, callback: (app: IApp) => void): void;
+}
+declare module acid {
     function ready(callback: () => void): void;
-    function app(elementid: string, callback: (app: App) => void): void;
 }

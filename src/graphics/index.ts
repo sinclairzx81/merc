@@ -33,3 +33,4 @@ THE SOFTWARE.
 
 /// <reference path="Element.ts" />
 /// <reference path="Renderer.ts" />
+/// <reference path="App.ts" />

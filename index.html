@@ -19,7 +19,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.min.js"></script>
 		<script src="bin/acid.js"></script>
 		<script>
-			acid.app("container", function(app) {
+			acid.graphics.app("container", function(app) {
 				acid.require(["scene/scene"], function(scene) {
 					acid.loop.render(function(state) {
 						scene.update(state.runningTime)
@@ -29,7 +29,6 @@
 					})
 				})
 			})
-	
 		</script>
 	</head>
 	
