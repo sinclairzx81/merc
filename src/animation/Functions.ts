@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-module tau.animation {
+module mxdi.animation {
 	
     export function lerp(src: number, dst: number, amount: number) {
         var delta = dst - src;

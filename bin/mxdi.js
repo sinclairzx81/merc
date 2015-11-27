@@ -445,8 +445,8 @@ var mxdi;
         })(gamepad = input.gamepad || (input.gamepad = {}));
     })(input = mxdi.input || (mxdi.input = {}));
 })(mxdi || (mxdi = {}));
-var tau;
-(function (tau) {
+var mxdi;
+(function (mxdi) {
     var animation;
     (function (animation) {
         function lerp(src, dst, amount) {
@@ -454,8 +454,8 @@ var tau;
             return src + (delta * amount);
         }
         animation.lerp = lerp;
-    })(animation = tau.animation || (tau.animation = {}));
-})(tau || (tau = {}));
+    })(animation = mxdi.animation || (mxdi.animation = {}));
+})(mxdi || (mxdi = {}));
 var mxdi;
 (function (mxdi) {
     var animation;
@@ -475,22 +475,24 @@ var mxdi;
             Animation.prototype.get = function (millisecond, repeat) {
                 repeat = repeat || false;
                 var first = this.frames[0];
-                var last = this.frames[frames.length - 1];
+                var last = this.frames[this.frames.length - 1];
                 if (repeat)
                     millisecond = millisecond % last.time;
-                if (millisecond <= first.time)
+                if (millisecond <= first.time) {
                     return first.value;
-                if (millisecond >= last.time)
+                }
+                if (millisecond >= last.time) {
                     return last.value;
+                }
                 var src = null;
                 var dst = null;
-                for (var i = (frames.length - 1); i >= 0; i--) {
+                for (var i = (this.frames.length - 1); i >= 0; i--) {
                     if (millisecond >= this.frames[i].time) {
-                        src = frames[i];
-                        if (i < frames.length - 1)
-                            dst = frames[i + 1];
+                        src = this.frames[i];
+                        if (i < this.frames.length - 1)
+                            dst = this.frames[i + 1];
                         else
-                            src = frames[i];
+                            src = this.frames[i];
                         break;
                     }
                 }
@@ -922,10 +924,10 @@ var mxdi;
                 });
             });
         }
-        function load(type, url) {
+        function load(type, urls) {
             switch (type) {
-                case "texture": return load_texture(url);
-                case "json": return load_json(url);
+                case "texture": return mxdi.Task.all(urls.map(load_texture));
+                case "json": return mxdi.Task.all(urls.map(load_json));
                 default: return new mxdi.Task(function (resolve, reject) {
                     return reject('unknown type');
                 });

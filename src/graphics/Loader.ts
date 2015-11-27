@@ -67,10 +67,10 @@ module mxdi.graphics {
 	 * @param path {string} the uri of the resource.
 	 * @returns {Task} a tau Task.
 	 */
-	export function load(type: string, url: string) : mxdi.Task<any> {
+	export function load(type: string, urls: string[]) : mxdi.Task<any> {
 		switch(type) {
-			case "texture": return load_texture(url); 
-			case "json": return load_json(url); 
+			case "texture": return mxdi.Task.all(urls.map(load_texture))
+			case "json":    return mxdi.Task.all(urls.map(load_json))
 			default: return new mxdi.Task((resolve, reject) => 
 					reject('unknown type'))
 		}

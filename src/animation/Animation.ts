@@ -52,19 +52,19 @@ module mxdi.animation {
 		public get(millisecond: number, repeat: boolean) : T { 
             repeat = repeat || false
             var first  = this.frames[0];
-            var last   = this.frames[frames.length - 1];
+            var last   = this.frames[this.frames.length - 1];
             if (repeat)  millisecond = millisecond % last.time;
-            if (millisecond <= first.time) return first.value 
-            if (millisecond >= last.time)  return last.value
+            if (millisecond <= first.time) { return first.value } 
+            if (millisecond >= last.time)  { return last.value }
             var src = null;
             var dst = null;
-            for (var i = (frames.length - 1); i >= 0; i--) {
+            for (var i = (this.frames.length - 1); i >= 0; i--) {
                 if (millisecond >= this.frames[i].time) {
-                    src = frames[i]
-                    if (i < frames.length - 1)
-                        dst = frames[i + 1]
+                    src = this.frames[i]
+                    if (i < this.frames.length - 1)
+                        dst = this.frames[i + 1]
                     else
-                        src = frames[i]
+                        src = this.frames[i]
                     break;
                 }
             }

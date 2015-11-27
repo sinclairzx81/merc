@@ -5,9 +5,13 @@
 				font-family: monospace;
 			}
 			#container {
+				position: fixed;
 				width: 100%;
-				height:400px;
-				
+				height: 100%;
+				left: 0;
+				top: 0;
+				background: rgba(51,51,51,0.7);
+				z-index: 10;
 			}
 		</style>
 		
@@ -15,22 +19,21 @@
 		<script src="bin/mxdi.js"></script>
 		<script>
 			mxdi.app("container", function(app) {
-				app.renderer.setClearColor(0xDDDDDD)
-				mxdi.require(["scene"], function(scene) {		
-					mxdi.loop.render(function() {
-						scene.camera.aspect = 
-							app.element.width / app.element.height;
-						scene.camera.updateProjectionMatrix()
-						app.renderer.render(scene.scene, scene.camera)
+				mxdi.require(["scene/scene"], function(scene) {
+					mxdi.loop.render(function(state) {
+						scene.update(state.runtime)
+						var targets = scene.render(app)
+						app.renderer.setClearColor(0x000000)
+						app.renderer.output(targets.output, true)
 					})
 				})
-			});
+			})
 	
 		</script>
 	</head>
 	
 	<body>
-		<div id="container"></div>
-		<h4>mxdi - test page</h4>
+		<div id="container">
+		</div>
 	</body>
 </html>

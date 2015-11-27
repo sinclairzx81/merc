@@ -90,7 +90,7 @@ declare module mxdi.input.gamepad {
         };
     };
 }
-declare module tau.animation {
+declare module mxdi.animation {
     function lerp(src: number, dst: number, amount: number): number;
 }
 declare module mxdi.animation {
@@ -191,7 +191,7 @@ declare module mxdi.graphics {
     }
 }
 declare module mxdi.graphics {
-    function load(type: string, url: string): mxdi.Task<any>;
+    function load(type: string, urls: string[]): mxdi.Task<any>;
 }
 declare module mxdi {
     interface App {
