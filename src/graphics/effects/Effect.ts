@@ -140,34 +140,34 @@ module acid.graphics.effects {
 				.split  ('\n')
 				.filter (line => line.indexOf('uniform') != -1)
 				.map    (line => line
-							.split  (' ')
-							.filter (item => item.length > 0)
-							.map    (item => item.replace(';', '').replace('\r', ''))
-							.reduce ((param:any, token, index) => {
-								switch (index) {
-									case 0: break;
-									case 1:
-										switch (token) {
-											case "int":         param.type = 'i';  break;
-											case "float":       param.type = 'f';  break;
-											case "vec2":        param.type = 'v2'; break;
-											case "vec3":        param.type = 'v3'; break;
-											case "vec4":        param.type = 'v4'; break;
-											case "mat3":        param.type = 'm3'; break;
-											case "mat4":        param.type = 'm4'; break;
-											case "sampler2D":   param.type = 't';  break;
-											case "samplerCube": param.type = 't';  break;
-											default: break;
-										}; break;
-									case 2:
-										param.name = token;
-										break;
-								}; return param;
-						}, {}))
-				.reduce((prev, current) => {
-					if (current) {
-						prev[current.name] = { type: current.type, value: null };
-					};return prev;
+				.split  (' ')
+				.filter (item => item.length > 0)
+				.map    (item => item.replace(';', '').replace('\r', ''))
+				.reduce ((param:any, token, index) => {
+					switch (index) {
+						case 0: break;
+						case 1:
+							switch (token) {
+								case "int":         param.type = 'i';  break;
+								case "float":       param.type = 'f';  break;
+								case "vec2":        param.type = 'v2'; break;
+								case "vec3":        param.type = 'v3'; break;
+								case "vec4":        param.type = 'v4'; break;
+								case "mat3":        param.type = 'm3'; break;
+								case "mat4":        param.type = 'm4'; break;
+								case "sampler2D":   param.type = 't';  break;
+								case "samplerCube": param.type = 't';  break;
+								default: break;
+							}; break;
+						case 2:
+							param.name = token;
+							break;
+					}; return param;
+			}, {}))
+			.reduce((prev, current) => {
+				if (current) {
+					prev[current.name] = { type: current.type, value: null };
+				};return prev;
 			}, {});
 		}
 		
