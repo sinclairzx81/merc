@@ -29,7 +29,7 @@ THE SOFTWARE.
 /// <reference path="../common/Queue.ts" />
 /// <reference path="../common/Task.ts" />
 
-module mxdi {
+module acid {
 	
 	interface ModuleDescriptor {
 		name     : string,
@@ -44,8 +44,8 @@ module mxdi {
 	/**
 	 * requests this resource as a string.
 	 */
-	var queue = new mxdi.Queue(1);
-	function request(name: string): mxdi.Task<string> {
+	var queue = new acid.Queue(1);
+	function request(name: string): acid.Task<string> {
 		return new Task<string>((resolve, reject) => {
 			queue.run(next => {
 				var xhr = new XMLHttpRequest()
@@ -66,8 +66,8 @@ module mxdi {
 	/**
 	 * loads this resource from the given path, returns a module descriptor.
 	 */
-	function load(name: string) : mxdi.Task<ModuleDescriptor> {  
-		return new mxdi.Task<ModuleDescriptor>((resolve, reject) => {
+	function load(name: string) : acid.Task<ModuleDescriptor> {  
+		return new acid.Task<ModuleDescriptor>((resolve, reject) => {
 			if(!descriptors[name]) {
 				request(name).then(source => {
 					var head    = document.getElementsByTagName("head")[0]
@@ -95,10 +95,10 @@ module mxdi {
 	/**
 	 * boots this module and returns its exports.
 	 */
-	function boot(descriptor: ModuleDescriptor): mxdi.Task<any> {
-		return new mxdi.Task<any>((resolve, reject) => {
-			mxdi.Task.all(descriptor.names.map(load)).then(descriptors => {
-				mxdi.Task.all(descriptors.map(boot)).then(exports => {
+	function boot(descriptor: ModuleDescriptor): acid.Task<any> {
+		return new acid.Task<any>((resolve, reject) => {
+			acid.Task.all(descriptor.names.map(load)).then(descriptors => {
+				acid.Task.all(descriptors.map(boot)).then(exports => {
 					if(cache[descriptor.name]) {
 						resolve(cache[descriptor.name])
 					} else {

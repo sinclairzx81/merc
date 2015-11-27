@@ -29,19 +29,19 @@ THE SOFTWARE.
 /// <reference path="../loop/loop.ts" />
 /// <reference path="../common/index.ts" />
 
-module mxdi.graphics {
+module acid.graphics {
 	
 	/**
 	 * Element: wraps a html element and monitors its state.
 	 */
-	export class Element extends mxdi.EventEmitter {
+	export class Element extends acid.EventEmitter {
 		public width  : number;
 		public height : number;
 		constructor(private element: HTMLElement) {
 			super();
 			this.width  = this.element.offsetWidth;
 			this.height = this.element.offsetHeight;
-			mxdi.loop.update(() => {
+			acid.loop.update(() => {
 				if(this.width  != this.element.offsetWidth ||
 				   this.height != this.element.offsetHeight) {
 					    this.width = this.element.offsetWidth;

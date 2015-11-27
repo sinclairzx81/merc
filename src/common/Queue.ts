@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-module mxdi {
+module acid {
 	
 	/**
 	 * A simple concurrency queue.

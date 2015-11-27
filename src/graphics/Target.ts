@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 /// <reference path="../typings.ts" />
 
-module mxdi.graphics {
+module acid.graphics {
 	/**
 	 * wrapper for a three webgl render target.
 	 */

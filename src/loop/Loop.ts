@@ -26,53 +26,77 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-module mxdi.loop {
+module acid.loop {
+	
 	var running = false;
+	var update_handlers: { started: Date, last: Date, callback: (status: LoopInfo) => void}[] = [];
+	var render_handlers: { started: Date, last: Date, callback: (status: LoopInfo) => void}[] = [];	
 	
-	var update_handlers: {
-		started : Date,
-		last    : Date,
-		callback: (status: LoopStatus) => void
-	}[] = [];
+	export interface LoopInfo {
+		/**
+		 * the elapsed time between this cycles and the previous.
+		 */
+		elapsed   : number,
 		
-	var render_handlers: {
-		started : Date,
-		last    : Date,
-		callback: (status: LoopStatus) => void
-	}[] = [];	
-	
-	export interface LoopStatus {
-		delta   : number,
-		runtime : number
+		/**
+		 * the total running time since this loop was started.
+		 */
+		runningTime : number
 	}
 	
+	/**
+	 * subscribes to the update cycle.
+	 */
+	export function update(callback: (status: LoopInfo) => void): void {
+		update_handlers.push({
+			started  : new Date(), // when loop started.
+			last     : new Date(), // the last iteration time.
+			callback : callback    // the callback.
+		})			
+	}
+	
+	/**
+	 * subscribes to the render cycle.
+	 */
+	export function render(callback: (status: LoopInfo) => void): void {
+		render_handlers.push({
+			started  : new Date(), // when loop started.
+			last     : new Date(), // the last iteration time.
+			callback : callback    // the callback.
+		})			
+	}
+		
 	/**
 	 * starts request animation frame loop.
 	 */
 	export function start() {
 		if(!running) {
 			running = true;
-			var step = () => { 
+			var step = () => {
+				//-------------------------------
 				// process update handlers
+				//-------------------------------
 				update_handlers.forEach(function (handler) {
 					var now     = new Date();
 					var delta   = now.getTime() - handler.last.getTime();
 					var elapsed = now.getTime() - handler.started.getTime();
 					handler.last = now
 					handler.callback({
-						delta   : delta,
-						runtime : elapsed
+						elapsed   : delta,
+						runningTime : elapsed
 					})
 				})
+				//-------------------------------
 				// process render handlers
+				//-------------------------------
 				render_handlers.forEach(function (handler) {
 					var now     = new Date();
 					var delta   = now.getTime() - handler.last.getTime();
 					var elapsed = now.getTime() - handler.started.getTime();
 					handler.last = now
 					handler.callback({
-						delta   : delta,
-						runtime : elapsed
+						elapsed   : delta,
+						runningTime : elapsed
 					})
 				})				
 				if(running) {
@@ -87,27 +111,5 @@ module mxdi.loop {
 	 */
 	export function stop(): void {
 		running = false;
-	}
-	
-	/**
-	 * subscribes to the update cycle.
-	 */
-	export function update(callback: (status: LoopStatus) => void): void {
-		update_handlers.push({
-			started  : new Date(), // when loop started.
-			last     : new Date(), // the last iteration time.
-			callback : callback    // the callback.
-		})			
-	}
-	
-	/**
-	 * subscribes to the render cycle.
-	 */
-	export function render(callback: (status: LoopStatus) => void): void {
-		render_handlers.push({
-			started  : new Date(), // when loop started.
-			last     : new Date(), // the last iteration time.
-			callback : callback    // the callback.
-		})			
 	}
 }

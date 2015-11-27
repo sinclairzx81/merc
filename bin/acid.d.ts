@@ -1,5 +1,5 @@
 /// <reference path="../src/typings/threejs/three.d.ts" />
-declare module mxdi {
+declare module acid {
     class EventEmitter {
         private events;
         once(name: string, callback: (data: any) => void): void;
@@ -8,7 +8,7 @@ declare module mxdi {
         emit(name: string, data: any): void;
     }
 }
-declare module mxdi {
+declare module acid {
     class Task<T extends any> {
         private state;
         private thens;
@@ -23,7 +23,7 @@ declare module mxdi {
         static all<T>(tasks: Task<T>[]): Task<T[]>;
     }
 }
-declare module mxdi {
+declare module acid {
     class Queue {
         private concurrency;
         private queue;
@@ -34,7 +34,7 @@ declare module mxdi {
         private next();
     }
 }
-declare module mxdi.loop {
+declare module acid.loop {
     interface LoopInfo {
         elapsed: number;
         runningTime: number;
@@ -44,14 +44,14 @@ declare module mxdi.loop {
     function start(): void;
     function stop(): void;
 }
-declare module mxdi {
+declare module acid {
 }
-declare module mxdi {
+declare module acid {
     function define(name: string, names: string[], callback: (...args: any[]) => any): void;
     function define(names: string[], callback: (...args: any[]) => any): void;
     function require(names: string[], callback: (...args: any[]) => any): Task<any>;
 }
-declare module mxdi.input.gamepad {
+declare module acid.input.gamepad {
     var enabled: boolean;
     var buttons: {
         a: number;
@@ -90,10 +90,10 @@ declare module mxdi.input.gamepad {
         };
     };
 }
-declare module mxdi.animation {
+declare module acid.animation {
     function lerp(src: number, dst: number, amount: number): number;
 }
-declare module mxdi.animation {
+declare module acid.animation {
     interface Frame<T> {
         time: number;
         value: T;
@@ -105,8 +105,8 @@ declare module mxdi.animation {
         get(millisecond: number, repeat: boolean): T;
     }
 }
-declare module mxdi.graphics {
-    class Element extends mxdi.EventEmitter {
+declare module acid.graphics {
+    class Element extends acid.EventEmitter {
         private element;
         width: number;
         height: number;
@@ -114,7 +114,7 @@ declare module mxdi.graphics {
         appendChild(element: HTMLElement): void;
     }
 }
-declare module mxdi.graphics {
+declare module acid.graphics {
     class Effect {
         private material;
         private scene;
@@ -129,7 +129,7 @@ declare module mxdi.graphics {
         private prepare_effect(source);
     }
 }
-declare module mxdi.graphics {
+declare module acid.graphics {
     class Renderer extends THREE.WebGLRenderer {
         private element;
         private material;
@@ -137,17 +137,17 @@ declare module mxdi.graphics {
         private camera;
         private plane;
         private mesh;
-        constructor(element: mxdi.graphics.Element);
+        constructor(element: acid.graphics.Element);
         private initialize();
         output(texture: THREE.Texture | THREE.WebGLRenderTarget, crop: boolean): void;
     }
 }
-declare module mxdi.graphics {
+declare module acid.graphics {
     class Target extends THREE.WebGLRenderTarget {
         constructor(width: number, height: number, options?: THREE.WebGLRenderTargetOptions);
     }
 }
-declare module mxdi.graphics {
+declare module acid.graphics {
     interface CanvasOptions {
         width: number;
         height: number;
@@ -163,7 +163,7 @@ declare module mxdi.graphics {
         dispose(): void;
     }
 }
-declare module mxdi.graphics {
+declare module acid.graphics {
     interface ConsoleOptions {
         width?: number;
         height?: number;
@@ -190,13 +190,13 @@ declare module mxdi.graphics {
         private draw();
     }
 }
-declare module mxdi.graphics {
-    function load(type: string, urls: string[]): mxdi.Task<any>;
+declare module acid.graphics {
+    function load(type: string, urls: string[]): acid.Task<any>;
 }
-declare module mxdi {
+declare module acid {
     interface App {
-        element: mxdi.graphics.Element;
-        renderer: mxdi.graphics.Renderer;
+        element: acid.graphics.Element;
+        renderer: acid.graphics.Renderer;
     }
     function ready(callback: () => void): void;
     function app(elementid: string, callback: (app: App) => void): void;

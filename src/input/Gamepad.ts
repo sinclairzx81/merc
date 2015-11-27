@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 /// <reference path="../loop/index.ts" />
 
-module mxdi.input.gamepad {
+module acid.input.gamepad {
 	
     /**
      * gamepad tracking list
@@ -117,7 +117,7 @@ module mxdi.input.gamepad {
     if (_navigator.getGamepads ||
         !!_navigator.webkitGetGamepads ||
         !!_navigator.webkitGamepads) {
-        mxdi.loop.update(() => {
+        acid.loop.update(() => {
             enabled = gamepads.length > 0;
             gamepads.forEach(gamepad => {
                 sticks.left.x          = gamepad.axes[0];

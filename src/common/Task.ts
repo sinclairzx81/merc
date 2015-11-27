@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-module mxdi {
+module acid {
 	
 	/**
 	 * simple fallback for a ES6 promise.

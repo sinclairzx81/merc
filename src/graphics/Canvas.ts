@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 /// <reference path="../typings.ts" />
 
-module mxdi.graphics {
+module acid.graphics {
 
 	export interface CanvasOptions {
 		width  : number,
@@ -56,11 +56,7 @@ module mxdi.graphics {
 			this._canvas.height       = this.options.height * ratio;
 			this._canvas.style.width  = this.options.width  + "px";
 			this._canvas.style.height = this.options.height + "px";
-			
 			this._context.setTransform(ratio, 0, 0, ratio, 0, 0);
-			
-			
-							
 		}
 		/**
 		 * returns the canvas rendering context.

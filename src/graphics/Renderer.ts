@@ -30,7 +30,7 @@ THE SOFTWARE.
 /// <reference path="Element.ts" />
 /// <reference path="Effect.ts" />
 
-module mxdi.graphics {
+module acid.graphics {
 	
 	export class Renderer extends THREE.WebGLRenderer {
 		private material: THREE.ShaderMaterial;
@@ -39,7 +39,7 @@ module mxdi.graphics {
 		private plane   : THREE.PlaneBufferGeometry;
 		private mesh    : THREE.Mesh;
 		
-		constructor(private element : mxdi.graphics.Element) {
+		constructor(private element : acid.graphics.Element) {
 			super();
 			this.initialize();
 		}

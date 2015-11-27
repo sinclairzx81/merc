@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 /// <reference path="Canvas" />
 
-module mxdi.graphics {
+module acid.graphics {
 	
 	/**
 	* Console options.
@@ -56,7 +56,7 @@ module mxdi.graphics {
 	 * Console rendering context bound to a threejs texture.
 	 */
 	export class Console  {
-		private canvas            : mxdi.graphics.Canvas;
+		private canvas            : acid.graphics.Canvas;
 		private buffer            : string [];
 		private ratio             : number;
 		private devicePixelRatio  : number;
@@ -85,7 +85,7 @@ module mxdi.graphics {
 			this.options.fontsize         = this.options.fontsize         || 16;
 			this.options.lineheight       = this.options.lineheight       || this.options.fontsize / 4;
 			this.options.buffersize       = this.options.buffersize       || 1024;
-			this.canvas                   = new mxdi.graphics.Canvas({
+			this.canvas                   = new acid.graphics.Canvas({
 				width : this.options.width,
 				height: this.options.height
 			})

@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-module mxdi.graphics {
+module acid.graphics {
 	
 	/**
 	 * webgl effect kernel

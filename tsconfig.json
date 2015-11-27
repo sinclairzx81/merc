@@ -3,7 +3,7 @@
 		"target": "ES5",
 		"removeComments": true,
 		"declaration": true,
-		"out": "bin/mxdi.js"
+		"out": "bin/acid.js"
 	},
 	"files": [
 		"src/index.ts"

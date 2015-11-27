@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-module mxdi {
+module acid {
 	/**
 	 * attempts to resolve a path.
 	 */

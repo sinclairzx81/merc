@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-module mxdi.animation {
+module acid.animation {
     
     /**
      * keyframe interface. 

@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-module mxdi.animation {
+module acid.animation {
 	
     export function lerp(src: number, dst: number, amount: number) {
         var delta = dst - src;

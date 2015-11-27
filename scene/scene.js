@@ -1,6 +1,6 @@
-/// <reference path="../bin/mxdi.d.ts" />
+/// <reference path="../bin/acid.d.ts" />
 
-mxdi.define([], function() {
+acid.define([], function() {
 	
 	//----------------------
 	// variables..
@@ -25,7 +25,7 @@ mxdi.define([], function() {
 	//----------------------
 	// animation..
 	//----------------------
-	var animation = new mxdi.animation.Animation(
+	var animation = new acid.animation.Animation(
 		[{time: 0,     value: { height: 0.0, offset:  3.5 } },
 		 {time: 4000,  value: { height: 1.5, offset:  3.5 } },
 		 {time: 4300,  value: { height: 3.5, offset:  7.0 } },
@@ -34,21 +34,21 @@ mxdi.define([], function() {
 		 {time: 12000, value: { height: 0.5, offset:  2.5 } },
 		 {time: 12300, value: { height: 0.5, offset:  3.5 } }], function(src, dst, amount) {
 			return { 
-				height: mxdi.animation.lerp(src.height, dst.height, amount),
-				offset: mxdi.animation.lerp(src.offset, dst.offset, amount)
+				height: acid.animation.lerp(src.height, dst.height, amount),
+				offset: acid.animation.lerp(src.offset, dst.offset, amount)
 			}
 		})  
 			
 	//----------------------
 	// lazy load scene.
 	//----------------------	
-	mxdi.graphics.load("json", 
+	acid.graphics.load("json", 
 		["scene/assets/cube.json",
 		 "scene/assets/floor.json",
 		 "scene/assets/wall.json",
 		 "scene/assets/light.json"])
 		.then(function(models) {				  
-		mxdi.graphics.load("texture", 
+		acid.graphics.load("texture", 
 			["scene/assets/cube.jpg",
 			 "scene/assets/floor.jpg",
 			 "scene/assets/wall.jpg"])
@@ -78,8 +78,8 @@ mxdi.define([], function() {
 				camera.up = new THREE.Vector3(0, 1, 0)
 				camera.lookAt(lookat);
 			
-			if(mxdi.input.gamepad.enabled) 
-				angle = mxdi.input.gamepad.sticks.left.x * 90			
+			if(acid.input.gamepad.enabled) 
+				angle = acid.input.gamepad.sticks.left.x * 90			
 			else
 				angle += 0.05			
 		},

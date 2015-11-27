@@ -1,5 +1,5 @@
-var mxdi;
-(function (mxdi) {
+var acid;
+(function (acid) {
     var Event = (function () {
         function Event() {
             this.handlers = [];
@@ -61,10 +61,10 @@ var mxdi;
         };
         return EventEmitter;
     })();
-    mxdi.EventEmitter = EventEmitter;
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    acid.EventEmitter = EventEmitter;
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var Task = (function () {
         function Task(resolver) {
             var _this = this;
@@ -148,10 +148,10 @@ var mxdi;
         };
         return Task;
     })();
-    mxdi.Task = Task;
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    acid.Task = Task;
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var Queue = (function () {
         function Queue(concurrency) {
             if (concurrency === void 0) { concurrency = 1; }
@@ -180,10 +180,10 @@ var mxdi;
         };
         return Queue;
     })();
-    mxdi.Queue = Queue;
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    acid.Queue = Queue;
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var loop;
     (function (loop) {
         var running = false;
@@ -241,10 +241,10 @@ var mxdi;
             running = false;
         }
         loop.stop = stop;
-    })(loop = mxdi.loop || (mxdi.loop = {}));
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    })(loop = acid.loop || (acid.loop = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     function resolvePath(base, path) {
         if (path.indexOf("http") == 0)
             return path;
@@ -261,15 +261,15 @@ var mxdi;
         }
         return stack.join("/");
     }
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var pending = null;
     var descriptors = {};
     var cache = {};
-    var queue = new mxdi.Queue(1);
+    var queue = new acid.Queue(1);
     function request(name) {
-        return new mxdi.Task(function (resolve, reject) {
+        return new acid.Task(function (resolve, reject) {
             queue.run(function (next) {
                 var xhr = new XMLHttpRequest();
                 xhr.addEventListener("readystatechange", function (event) {
@@ -291,7 +291,7 @@ var mxdi;
         });
     }
     function load(name) {
-        return new mxdi.Task(function (resolve, reject) {
+        return new acid.Task(function (resolve, reject) {
             if (!descriptors[name]) {
                 request(name).then(function (source) {
                     var head = document.getElementsByTagName("head")[0];
@@ -320,9 +320,9 @@ var mxdi;
         });
     }
     function boot(descriptor) {
-        return new mxdi.Task(function (resolve, reject) {
-            mxdi.Task.all(descriptor.names.map(load)).then(function (descriptors) {
-                mxdi.Task.all(descriptors.map(boot)).then(function (exports) {
+        return new acid.Task(function (resolve, reject) {
+            acid.Task.all(descriptor.names.map(load)).then(function (descriptors) {
+                acid.Task.all(descriptors.map(boot)).then(function (exports) {
                     if (cache[descriptor.name]) {
                         resolve(cache[descriptor.name]);
                     }
@@ -349,7 +349,7 @@ var mxdi;
                 callback: arguments[1]
             };
     }
-    mxdi.define = define;
+    acid.define = define;
     function require(names, callback) {
         return boot({
             name: undefined,
@@ -357,10 +357,10 @@ var mxdi;
             callback: callback
         });
     }
-    mxdi.require = require;
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    acid.require = require;
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var input;
     (function (input) {
         var gamepad;
@@ -416,7 +416,7 @@ var mxdi;
             if (_navigator.getGamepads ||
                 !!_navigator.webkitGetGamepads ||
                 !!_navigator.webkitGamepads) {
-                mxdi.loop.update(function () {
+                acid.loop.update(function () {
                     gamepad_1.enabled = gamepads.length > 0;
                     gamepads.forEach(function (gamepad) {
                         gamepad_1.sticks.left.x = gamepad.axes[0];
@@ -443,10 +443,10 @@ var mxdi;
                 });
             }
         })(gamepad = input.gamepad || (input.gamepad = {}));
-    })(input = mxdi.input || (mxdi.input = {}));
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    })(input = acid.input || (acid.input = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var animation;
     (function (animation) {
         function lerp(src, dst, amount) {
@@ -454,10 +454,10 @@ var mxdi;
             return src + (delta * amount);
         }
         animation.lerp = lerp;
-    })(animation = mxdi.animation || (mxdi.animation = {}));
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    })(animation = acid.animation || (acid.animation = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var animation;
     (function (animation) {
         var Animation = (function () {
@@ -505,15 +505,15 @@ var mxdi;
             return Animation;
         })();
         animation.Animation = Animation;
-    })(animation = mxdi.animation || (mxdi.animation = {}));
-})(mxdi || (mxdi = {}));
+    })(animation = acid.animation || (acid.animation = {}));
+})(acid || (acid = {}));
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var mxdi;
-(function (mxdi) {
+var acid;
+(function (acid) {
     var graphics;
     (function (graphics) {
         var Element = (function (_super) {
@@ -524,7 +524,7 @@ var mxdi;
                 this.element = element;
                 this.width = this.element.offsetWidth;
                 this.height = this.element.offsetHeight;
-                mxdi.loop.update(function () {
+                acid.loop.update(function () {
                     if (_this.width != _this.element.offsetWidth ||
                         _this.height != _this.element.offsetHeight) {
                         _this.width = _this.element.offsetWidth;
@@ -540,12 +540,12 @@ var mxdi;
                 this.element.appendChild(element);
             };
             return Element;
-        })(mxdi.EventEmitter);
+        })(acid.EventEmitter);
         graphics.Element = Element;
-    })(graphics = mxdi.graphics || (mxdi.graphics = {}));
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var graphics;
     (function (graphics) {
         var Effect = (function () {
@@ -690,10 +690,10 @@ var mxdi;
             return Effect;
         })();
         graphics.Effect = Effect;
-    })(graphics = mxdi.graphics || (mxdi.graphics = {}));
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var graphics;
     (function (graphics) {
         var Renderer = (function (_super) {
@@ -771,10 +771,10 @@ var mxdi;
             return Renderer;
         })(THREE.WebGLRenderer);
         graphics.Renderer = Renderer;
-    })(graphics = mxdi.graphics || (mxdi.graphics = {}));
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var graphics;
     (function (graphics) {
         var Target = (function (_super) {
@@ -785,10 +785,10 @@ var mxdi;
             return Target;
         })(THREE.WebGLRenderTarget);
         graphics.Target = Target;
-    })(graphics = mxdi.graphics || (mxdi.graphics = {}));
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var graphics;
     (function (graphics) {
         var Canvas = (function () {
@@ -817,10 +817,10 @@ var mxdi;
             return Canvas;
         })();
         graphics.Canvas = Canvas;
-    })(graphics = mxdi.graphics || (mxdi.graphics = {}));
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var graphics;
     (function (graphics) {
         var Console = (function () {
@@ -839,7 +839,7 @@ var mxdi;
                 this.options.fontsize = this.options.fontsize || 16;
                 this.options.lineheight = this.options.lineheight || this.options.fontsize / 4;
                 this.options.buffersize = this.options.buffersize || 1024;
-                this.canvas = new mxdi.graphics.Canvas({
+                this.canvas = new acid.graphics.Canvas({
                     width: this.options.width,
                     height: this.options.height
                 });
@@ -899,14 +899,14 @@ var mxdi;
             return Console;
         })();
         graphics.Console = Console;
-    })(graphics = mxdi.graphics || (mxdi.graphics = {}));
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var graphics;
     (function (graphics) {
         function load_json(url) {
-            return new mxdi.Task(function (resolve, reject) {
+            return new acid.Task(function (resolve, reject) {
                 var loader = new THREE.JSONLoader();
                 loader.load(url, function (geometry, materials) {
                     resolve({
@@ -917,7 +917,7 @@ var mxdi;
             });
         }
         function load_texture(url) {
-            return new mxdi.Task(function (resolve, reject) {
+            return new acid.Task(function (resolve, reject) {
                 var loader = new THREE.TextureLoader();
                 loader.load(url, function (texture) {
                     resolve(texture);
@@ -926,18 +926,18 @@ var mxdi;
         }
         function load(type, urls) {
             switch (type) {
-                case "texture": return mxdi.Task.all(urls.map(load_texture));
-                case "json": return mxdi.Task.all(urls.map(load_json));
-                default: return new mxdi.Task(function (resolve, reject) {
+                case "texture": return acid.Task.all(urls.map(load_texture));
+                case "json": return acid.Task.all(urls.map(load_json));
+                default: return new acid.Task(function (resolve, reject) {
                     return reject('unknown type');
                 });
             }
         }
         graphics.load = load;
-    })(graphics = mxdi.graphics || (mxdi.graphics = {}));
-})(mxdi || (mxdi = {}));
-var mxdi;
-(function (mxdi) {
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
     var loaded = false;
     window.addEventListener("load", function () { return loaded = true; });
     function ready(callback) {
@@ -948,18 +948,18 @@ var mxdi;
             callback();
         }
     }
-    mxdi.ready = ready;
+    acid.ready = ready;
     function app(elementid, callback) {
         ready(function () {
             var domelement = document.getElementById(elementid);
-            var element = new mxdi.graphics.Element(domelement);
-            var renderer = new mxdi.graphics.Renderer(element);
-            mxdi.loop.start();
+            var element = new acid.graphics.Element(domelement);
+            var renderer = new acid.graphics.Renderer(element);
+            acid.loop.start();
             callback({
                 element: element,
                 renderer: renderer,
             });
         });
     }
-    mxdi.app = app;
-})(mxdi || (mxdi = {}));
+    acid.app = app;
+})(acid || (acid = {}));
