@@ -29,7 +29,7 @@ THE SOFTWARE.
 /// <reference path="../../typings.ts" />
 /// <reference path="../../common/Task.ts" />
 
-module acid.graphics {
+module acid.graphics.assets {
 	
 	/**
 	 * loads the threejs json format.

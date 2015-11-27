@@ -804,35 +804,38 @@ var acid;
 (function (acid) {
     var graphics;
     (function (graphics) {
-        function load_json(url) {
-            return new acid.Task(function (resolve, reject) {
-                var loader = new THREE.JSONLoader();
-                loader.load(url, function (geometry, materials) {
-                    resolve({
-                        geometry: geometry,
-                        materials: materials
+        var assets;
+        (function (assets) {
+            function load_json(url) {
+                return new acid.Task(function (resolve, reject) {
+                    var loader = new THREE.JSONLoader();
+                    loader.load(url, function (geometry, materials) {
+                        resolve({
+                            geometry: geometry,
+                            materials: materials
+                        });
                     });
                 });
-            });
-        }
-        function load_texture(url) {
-            return new acid.Task(function (resolve, reject) {
-                var loader = new THREE.TextureLoader();
-                loader.load(url, function (texture) {
-                    resolve(texture);
-                });
-            });
-        }
-        function load(type, urls) {
-            switch (type) {
-                case "texture": return acid.Task.all(urls.map(load_texture));
-                case "json": return acid.Task.all(urls.map(load_json));
-                default: return new acid.Task(function (resolve, reject) {
-                    return reject('unknown type');
+            }
+            function load_texture(url) {
+                return new acid.Task(function (resolve, reject) {
+                    var loader = new THREE.TextureLoader();
+                    loader.load(url, function (texture) {
+                        resolve(texture);
+                    });
                 });
             }
-        }
-        graphics.load = load;
+            function load(type, urls) {
+                switch (type) {
+                    case "texture": return acid.Task.all(urls.map(load_texture));
+                    case "json": return acid.Task.all(urls.map(load_json));
+                    default: return new acid.Task(function (resolve, reject) {
+                        return reject('unknown type');
+                    });
+                }
+            }
+            assets.load = load;
+        })(assets = graphics.assets || (graphics.assets = {}));
     })(graphics = acid.graphics || (acid.graphics = {}));
 })(acid || (acid = {}));
 var acid;

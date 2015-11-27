@@ -29,7 +29,7 @@ THE SOFTWARE.
 /// <reference path="targets/index.ts" />
 /// <reference path="effects/index.ts" />
 /// <reference path="canvas/index.ts" />
-/// <reference path="loader/index.ts" />
+/// <reference path="assets/index.ts" />
 
 /// <reference path="Element.ts" />
 /// <reference path="Renderer.ts" />

@@ -168,7 +168,7 @@ declare module acid.graphics.canvas {
         private draw();
     }
 }
-declare module acid.graphics {
+declare module acid.graphics.assets {
     function load(type: string, urls: string[]): acid.Task<any>;
 }
 declare module acid.graphics {

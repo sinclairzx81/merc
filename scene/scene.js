@@ -22,6 +22,7 @@ acid.define([], function() {
 		})
 	}
 	
+	
 	//----------------------
 	// animation..
 	//----------------------
@@ -43,16 +44,14 @@ acid.define([], function() {
 	//----------------------
 	// lazy load scene.
 	//----------------------	
-	acid.graphics.load("json", 
-		["scene/assets/cube.json",
-		 "scene/assets/floor.json",
-		 "scene/assets/wall.json",
-		 "scene/assets/light.json"])
+	acid.graphics.assets.load("json", ["scene/assets/cube.json",
+		 							   "scene/assets/floor.json",
+		 							   "scene/assets/wall.json",
+		 							   "scene/assets/light.json"])
 		.then(function(models) {				  
-		acid.graphics.load("texture", 
-			["scene/assets/cube.jpg",
-			 "scene/assets/floor.jpg",
-			 "scene/assets/wall.jpg"])
+		acid.graphics.assets.load("texture", ["scene/assets/cube.jpg",
+			 								  "scene/assets/floor.jpg",
+			 								  "scene/assets/wall.jpg"])
 			.then(function(textures) {
 				// scene..							 					   				
 				scene.add(new THREE.Mesh(models[0].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF, map: textures[0] } )))
