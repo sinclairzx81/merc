@@ -1,6 +1,6 @@
 /// <reference path="../src/typings/threejs/three.d.ts" />
 declare module acid {
-    class EventEmitter {
+    class Events {
         private events;
         once(name: string, callback: (data: any) => void): void;
         on(name: string, callback: (data: any) => void): void;
@@ -105,16 +105,12 @@ declare module acid.animation {
         get(millisecond: number, repeat: boolean): T;
     }
 }
-declare module acid.graphics {
-    class Element extends acid.EventEmitter {
-        private element;
-        width: number;
-        height: number;
-        constructor(element: HTMLElement);
-        appendChild(element: HTMLElement): void;
+declare module acid.graphics.targets {
+    class Target extends THREE.WebGLRenderTarget {
+        constructor(width: number, height: number, options?: THREE.WebGLRenderTargetOptions);
     }
 }
-declare module acid.graphics {
+declare module acid.graphics.effects {
     class Effect {
         private material;
         private scene;
@@ -129,25 +125,7 @@ declare module acid.graphics {
         private prepare_effect(source);
     }
 }
-declare module acid.graphics {
-    class Renderer extends THREE.WebGLRenderer {
-        private element;
-        private material;
-        private scene;
-        private camera;
-        private plane;
-        private mesh;
-        constructor(element: acid.graphics.Element);
-        private initialize();
-        output(texture: THREE.Texture | THREE.WebGLRenderTarget, crop: boolean): void;
-    }
-}
-declare module acid.graphics {
-    class Target extends THREE.WebGLRenderTarget {
-        constructor(width: number, height: number, options?: THREE.WebGLRenderTargetOptions);
-    }
-}
-declare module acid.graphics {
+declare module acid.graphics.canvas {
     interface CanvasOptions {
         width: number;
         height: number;
@@ -163,7 +141,7 @@ declare module acid.graphics {
         dispose(): void;
     }
 }
-declare module acid.graphics {
+declare module acid.graphics.canvas {
     interface ConsoleOptions {
         width?: number;
         height?: number;
@@ -192,6 +170,28 @@ declare module acid.graphics {
 }
 declare module acid.graphics {
     function load(type: string, urls: string[]): acid.Task<any>;
+}
+declare module acid.graphics {
+    class Element extends acid.Events {
+        private element;
+        width: number;
+        height: number;
+        constructor(element: HTMLElement);
+        appendChild(element: HTMLElement): void;
+    }
+}
+declare module acid.graphics {
+    class Renderer extends THREE.WebGLRenderer {
+        private element;
+        private material;
+        private scene;
+        private camera;
+        private plane;
+        private mesh;
+        constructor(element: acid.graphics.Element);
+        private initialize();
+        output(texture: THREE.Texture | THREE.WebGLRenderTarget, crop: boolean): void;
+    }
 }
 declare module acid {
     interface App {

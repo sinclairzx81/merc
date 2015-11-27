@@ -33,35 +33,35 @@ var acid;
         };
         return Event;
     })();
-    var EventEmitter = (function () {
-        function EventEmitter() {
+    var Events = (function () {
+        function Events() {
             this.events = [];
         }
-        EventEmitter.prototype.once = function (name, callback) {
+        Events.prototype.once = function (name, callback) {
             if (!this.events[name]) {
                 this.events[name] = new Event();
             }
             this.events[name].once(callback);
         };
-        EventEmitter.prototype.on = function (name, callback) {
+        Events.prototype.on = function (name, callback) {
             if (!this.events[name]) {
                 this.events[name] = new Event();
             }
             this.events[name].on(callback);
         };
-        EventEmitter.prototype.remove = function (name, callback) {
+        Events.prototype.remove = function (name, callback) {
             if (!this.events[name]) {
                 this.events[name].remove(callback);
             }
         };
-        EventEmitter.prototype.emit = function (name, data) {
+        Events.prototype.emit = function (name, data) {
             if (this.events[name]) {
                 this.events[name].emit(data);
             }
         };
-        return EventEmitter;
+        return Events;
     })();
-    acid.EventEmitter = EventEmitter;
+    acid.Events = Events;
 })(acid || (acid = {}));
 var acid;
 (function (acid) {
@@ -516,6 +516,329 @@ var acid;
 (function (acid) {
     var graphics;
     (function (graphics) {
+        var targets;
+        (function (targets) {
+            var Target = (function (_super) {
+                __extends(Target, _super);
+                function Target(width, height, options) {
+                    _super.call(this, width, height, options);
+                }
+                return Target;
+            })(THREE.WebGLRenderTarget);
+            targets.Target = Target;
+        })(targets = graphics.targets || (graphics.targets = {}));
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
+    var graphics;
+    (function (graphics) {
+        var effects;
+        (function (effects) {
+            var Effect = (function () {
+                function Effect(source_or_function) {
+                    var source = this.parse_to_string(source_or_function);
+                    var uniforms = this.parse_uniforms(source);
+                    uniforms.resolution = {
+                        type: "v2",
+                        value: new THREE.Vector2(0, 0)
+                    };
+                    this.material = new THREE.ShaderMaterial({
+                        depthWrite: false,
+                        uniforms: uniforms,
+                        fragmentShader: this.prepare_effect(source),
+                        vertexShader: [
+                            "varying vec2  texcoord;",
+                            "uniform vec2  resolution;",
+                            "void main() {",
+                            "texcoord = uv;",
+                            "	gl_Position = projectionMatrix * ",
+                            "		modelViewMatrix * vec4(",
+                            "		position.x * resolution.x,",
+                            "		position.y * resolution.y,",
+                            "		position.z,  1.0 );",
+                            "}"
+                        ].join('\n')
+                    });
+                    this.scene = new THREE.Scene();
+                    this.camera = new THREE.OrthographicCamera(100, 100, 100, 100, -10000, 10000);
+                    this.plane = new THREE.PlaneBufferGeometry(1, 1);
+                    this.mesh = new THREE.Mesh(this.plane, this.material);
+                    this.mesh.position.z = -100;
+                    this.scene.add(this.mesh);
+                }
+                Effect.prototype.render = function (renderer, uniforms, target) {
+                    var _this = this;
+                    var half_width = target.width / 2;
+                    var half_height = target.height / 2;
+                    this.camera.left = -half_width;
+                    this.camera.right = half_width;
+                    this.camera.top = half_height;
+                    this.camera.bottom = -half_height;
+                    this.camera.updateProjectionMatrix();
+                    this.material.uniforms.resolution.value =
+                        new THREE.Vector2(target.width, target.height);
+                    Object.keys(uniforms).forEach(function (key) {
+                        if (_this.material.uniforms[key])
+                            _this.material.uniforms[key].value =
+                                uniforms[key];
+                    });
+                    renderer.setClearColor(0x000000);
+                    renderer.render(this.scene, this.camera, target, true);
+                };
+                Effect.prototype.dispose = function () {
+                    this.material.dispose();
+                    this.plane.dispose();
+                };
+                Effect.prototype.parse_to_string = function (string_or_func) {
+                    if (typeof string_or_func === "function") {
+                        var src = string_or_func.toString();
+                        var body = src.slice(src.indexOf("{") + 1, src.lastIndexOf("}"));
+                        if ((body.charAt(0) != '/') ||
+                            (body.charAt(1) != '*') ||
+                            (body.charAt(body.length - 2) != '*') ||
+                            (body.charAt(body.length - 1) != '/'))
+                            throw Error("parse_to_string: shader_func not properly formatted");
+                        return body.substring(2, body.length - 2);
+                    }
+                    else if (typeof string_or_func === 'string' || string_or_func instanceof String) {
+                        return string_or_func;
+                    }
+                    else {
+                        throw Error("parse_to_string: not a function or string.");
+                    }
+                };
+                Effect.prototype.parse_uniforms = function (source) {
+                    return source
+                        .split('\n')
+                        .filter(function (line) { return line.indexOf('uniform') != -1; })
+                        .map(function (line) { return line
+                        .split(' ')
+                        .filter(function (item) { return item.length > 0; })
+                        .map(function (item) { return item.replace(';', '').replace('\r', ''); })
+                        .reduce(function (param, token, index) {
+                        switch (index) {
+                            case 0: break;
+                            case 1:
+                                switch (token) {
+                                    case "int":
+                                        param.type = 'i';
+                                        break;
+                                    case "float":
+                                        param.type = 'f';
+                                        break;
+                                    case "vec2":
+                                        param.type = 'v2';
+                                        break;
+                                    case "vec3":
+                                        param.type = 'v3';
+                                        break;
+                                    case "vec4":
+                                        param.type = 'v4';
+                                        break;
+                                    case "mat3":
+                                        param.type = 'm3';
+                                        break;
+                                    case "mat4":
+                                        param.type = 'm4';
+                                        break;
+                                    case "sampler2D":
+                                        param.type = 't';
+                                        break;
+                                    case "samplerCube":
+                                        param.type = 't';
+                                        break;
+                                    default: break;
+                                }
+                                ;
+                                break;
+                            case 2:
+                                param.name = token;
+                                break;
+                        }
+                        ;
+                        return param;
+                    }, {}); })
+                        .reduce(function (prev, current) {
+                        if (current) {
+                            prev[current.name] = { type: current.type, value: null };
+                        }
+                        ;
+                        return prev;
+                    }, {});
+                };
+                Effect.prototype.prepare_effect = function (source) {
+                    return [
+                        "varying vec2  texcoord;",
+                        source,
+                        "void main() { gl_FragColor = effect(texcoord); }"]
+                        .join('\n');
+                };
+                return Effect;
+            })();
+            effects.Effect = Effect;
+        })(effects = graphics.effects || (graphics.effects = {}));
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
+    var graphics;
+    (function (graphics) {
+        var canvas;
+        (function (canvas) {
+            var Canvas = (function () {
+                function Canvas(options) {
+                    this.options = options;
+                    this._canvas = document.createElement('canvas');
+                    this._context = this._canvas.getContext('2d');
+                    this._texture = new THREE.Texture(this._canvas);
+                    var ratio = 1;
+                    this._canvas.width = this.options.width * ratio;
+                    this._canvas.height = this.options.height * ratio;
+                    this._canvas.style.width = this.options.width + "px";
+                    this._canvas.style.height = this.options.height + "px";
+                    this._context.setTransform(ratio, 0, 0, ratio, 0, 0);
+                }
+                Canvas.prototype.context = function () {
+                    this._texture.needsUpdate = true;
+                    return this._context;
+                };
+                Canvas.prototype.texture = function () {
+                    return this._texture;
+                };
+                Canvas.prototype.dispose = function () {
+                    this._texture.dispose();
+                };
+                return Canvas;
+            })();
+            canvas.Canvas = Canvas;
+        })(canvas = graphics.canvas || (graphics.canvas = {}));
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
+    var graphics;
+    (function (graphics) {
+        var canvas;
+        (function (canvas) {
+            var Console = (function () {
+                function Console(options) {
+                    this.options = options;
+                    this.buffer = [];
+                    this.initialize();
+                }
+                Console.prototype.initialize = function () {
+                    this.options = this.options || {};
+                    this.options.width = this.options.width || 256;
+                    this.options.height = this.options.height || 256;
+                    this.options.color = this.options.color || "white";
+                    this.options.backgroundColor = this.options.backgroundColor || "black";
+                    this.options.font = this.options.font || "monospace";
+                    this.options.fontsize = this.options.fontsize || 16;
+                    this.options.lineheight = this.options.lineheight || this.options.fontsize / 4;
+                    this.options.buffersize = this.options.buffersize || 1024;
+                    this.canvas = new acid.graphics.canvas.Canvas({
+                        width: this.options.width,
+                        height: this.options.height
+                    });
+                    this.log("initialize");
+                    this.clear();
+                };
+                Console.prototype.texture = function () {
+                    return this.canvas.texture();
+                };
+                Console.prototype.dispose = function () {
+                    this.canvas.dispose();
+                };
+                Console.prototype.clear = function () {
+                    this.buffer = [];
+                    this.draw();
+                };
+                Console.prototype.log = function (message) {
+                    var _this = this;
+                    var context = this.canvas.context();
+                    if (typeof message !== "string")
+                        message = message.toString();
+                    var temp = [];
+                    message.split('').forEach(function (char) {
+                        temp.push(char);
+                        var metrics = context.measureText(temp.join(''));
+                        if (metrics.width > _this.options.width) {
+                            temp.pop();
+                            var line = temp.join('').trim();
+                            if (line.length > 0)
+                                _this.buffer.push(line);
+                            temp = [char];
+                        }
+                    });
+                    var line = temp.join('').trim();
+                    if (line.length > 0)
+                        this.buffer.push(line);
+                    while (this.buffer.length >
+                        this.options.buffersize)
+                        this.buffer.shift();
+                    this.draw();
+                };
+                Console.prototype.draw = function () {
+                    var _this = this;
+                    var context = this.canvas.context();
+                    var subset = this.buffer.slice(Math.max(this.buffer.length -
+                        (this.options.height / this.options.fontsize), 0)).reverse();
+                    context.fillStyle = this.options.backgroundColor;
+                    context.fillRect(0, 0, this.options.width, this.options.height);
+                    context.font = this.options.fontsize.toString() + "px " + this.options.font;
+                    context.fillStyle = this.options.color;
+                    subset.forEach(function (line, index) {
+                        var y = (_this.options.height - (_this.options.lineheight * 2)) -
+                            (index * (_this.options.fontsize + _this.options.lineheight));
+                        context.fillText(line, 4, y);
+                    });
+                };
+                return Console;
+            })();
+            canvas.Console = Console;
+        })(canvas = graphics.canvas || (graphics.canvas = {}));
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
+    var graphics;
+    (function (graphics) {
+        function load_json(url) {
+            return new acid.Task(function (resolve, reject) {
+                var loader = new THREE.JSONLoader();
+                loader.load(url, function (geometry, materials) {
+                    resolve({
+                        geometry: geometry,
+                        materials: materials
+                    });
+                });
+            });
+        }
+        function load_texture(url) {
+            return new acid.Task(function (resolve, reject) {
+                var loader = new THREE.TextureLoader();
+                loader.load(url, function (texture) {
+                    resolve(texture);
+                });
+            });
+        }
+        function load(type, urls) {
+            switch (type) {
+                case "texture": return acid.Task.all(urls.map(load_texture));
+                case "json": return acid.Task.all(urls.map(load_json));
+                default: return new acid.Task(function (resolve, reject) {
+                    return reject('unknown type');
+                });
+            }
+        }
+        graphics.load = load;
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
+    var graphics;
+    (function (graphics) {
         var Element = (function (_super) {
             __extends(Element, _super);
             function Element(element) {
@@ -540,156 +863,8 @@ var acid;
                 this.element.appendChild(element);
             };
             return Element;
-        })(acid.EventEmitter);
+        })(acid.Events);
         graphics.Element = Element;
-    })(graphics = acid.graphics || (acid.graphics = {}));
-})(acid || (acid = {}));
-var acid;
-(function (acid) {
-    var graphics;
-    (function (graphics) {
-        var Effect = (function () {
-            function Effect(source_or_function) {
-                var source = this.parse_to_string(source_or_function);
-                var uniforms = this.parse_uniforms(source);
-                uniforms.resolution = {
-                    type: "v2",
-                    value: new THREE.Vector2(0, 0)
-                };
-                this.material = new THREE.ShaderMaterial({
-                    depthWrite: false,
-                    uniforms: uniforms,
-                    fragmentShader: this.prepare_effect(source),
-                    vertexShader: [
-                        "varying vec2  texcoord;",
-                        "uniform vec2  resolution;",
-                        "void main() {",
-                        "texcoord = uv;",
-                        "	gl_Position = projectionMatrix * ",
-                        "		modelViewMatrix * vec4(",
-                        "		position.x * resolution.x,",
-                        "		position.y * resolution.y,",
-                        "		position.z,  1.0 );",
-                        "}"
-                    ].join('\n')
-                });
-                this.scene = new THREE.Scene();
-                this.camera = new THREE.OrthographicCamera(100, 100, 100, 100, -10000, 10000);
-                this.plane = new THREE.PlaneBufferGeometry(1, 1);
-                this.mesh = new THREE.Mesh(this.plane, this.material);
-                this.mesh.position.z = -100;
-                this.scene.add(this.mesh);
-            }
-            Effect.prototype.render = function (renderer, uniforms, target) {
-                var _this = this;
-                var half_width = target.width / 2;
-                var half_height = target.height / 2;
-                this.camera.left = -half_width;
-                this.camera.right = half_width;
-                this.camera.top = half_height;
-                this.camera.bottom = -half_height;
-                this.camera.updateProjectionMatrix();
-                this.material.uniforms.resolution.value =
-                    new THREE.Vector2(target.width, target.height);
-                Object.keys(uniforms).forEach(function (key) {
-                    if (_this.material.uniforms[key])
-                        _this.material.uniforms[key].value =
-                            uniforms[key];
-                });
-                renderer.setClearColor(0x000000);
-                renderer.render(this.scene, this.camera, target, true);
-            };
-            Effect.prototype.dispose = function () {
-                this.material.dispose();
-                this.plane.dispose();
-            };
-            Effect.prototype.parse_to_string = function (string_or_func) {
-                if (typeof string_or_func === "function") {
-                    var src = string_or_func.toString();
-                    var body = src.slice(src.indexOf("{") + 1, src.lastIndexOf("}"));
-                    if ((body.charAt(0) != '/') ||
-                        (body.charAt(1) != '*') ||
-                        (body.charAt(body.length - 2) != '*') ||
-                        (body.charAt(body.length - 1) != '/'))
-                        throw Error("parse_to_string: shader_func not properly formatted");
-                    return body.substring(2, body.length - 2);
-                }
-                else if (typeof string_or_func === 'string' || string_or_func instanceof String) {
-                    return string_or_func;
-                }
-                else {
-                    throw Error("parse_to_string: not a function or string.");
-                }
-            };
-            Effect.prototype.parse_uniforms = function (source) {
-                return source
-                    .split('\n')
-                    .filter(function (line) { return line.indexOf('uniform') != -1; })
-                    .map(function (line) { return line
-                    .split(' ')
-                    .filter(function (item) { return item.length > 0; })
-                    .map(function (item) { return item.replace(';', '').replace('\r', ''); })
-                    .reduce(function (param, token, index) {
-                    switch (index) {
-                        case 0: break;
-                        case 1:
-                            switch (token) {
-                                case "int":
-                                    param.type = 'i';
-                                    break;
-                                case "float":
-                                    param.type = 'f';
-                                    break;
-                                case "vec2":
-                                    param.type = 'v2';
-                                    break;
-                                case "vec3":
-                                    param.type = 'v3';
-                                    break;
-                                case "vec4":
-                                    param.type = 'v4';
-                                    break;
-                                case "mat3":
-                                    param.type = 'm3';
-                                    break;
-                                case "mat4":
-                                    param.type = 'm4';
-                                    break;
-                                case "sampler2D":
-                                    param.type = 't';
-                                    break;
-                                case "samplerCube":
-                                    param.type = 't';
-                                    break;
-                                default: break;
-                            }
-                            ;
-                            break;
-                        case 2:
-                            param.name = token;
-                            break;
-                    }
-                    ;
-                    return param;
-                }, {}); })
-                    .reduce(function (prev, current) {
-                    if (current) {
-                        prev[current.name] = { type: current.type, value: null };
-                    }
-                    ;
-                    return prev;
-                }, {});
-            };
-            Effect.prototype.prepare_effect = function (source) {
-                return [
-                    "varying vec2  texcoord;",
-                    source,
-                    "void main() { gl_FragColor = effect(texcoord); }"]
-                    .join('\n');
-            };
-            return Effect;
-        })();
-        graphics.Effect = Effect;
     })(graphics = acid.graphics || (acid.graphics = {}));
 })(acid || (acid = {}));
 var acid;
@@ -771,169 +946,6 @@ var acid;
             return Renderer;
         })(THREE.WebGLRenderer);
         graphics.Renderer = Renderer;
-    })(graphics = acid.graphics || (acid.graphics = {}));
-})(acid || (acid = {}));
-var acid;
-(function (acid) {
-    var graphics;
-    (function (graphics) {
-        var Target = (function (_super) {
-            __extends(Target, _super);
-            function Target(width, height, options) {
-                _super.call(this, width, height, options);
-            }
-            return Target;
-        })(THREE.WebGLRenderTarget);
-        graphics.Target = Target;
-    })(graphics = acid.graphics || (acid.graphics = {}));
-})(acid || (acid = {}));
-var acid;
-(function (acid) {
-    var graphics;
-    (function (graphics) {
-        var Canvas = (function () {
-            function Canvas(options) {
-                this.options = options;
-                this._canvas = document.createElement('canvas');
-                this._context = this._canvas.getContext('2d');
-                this._texture = new THREE.Texture(this._canvas);
-                var ratio = 1;
-                this._canvas.width = this.options.width * ratio;
-                this._canvas.height = this.options.height * ratio;
-                this._canvas.style.width = this.options.width + "px";
-                this._canvas.style.height = this.options.height + "px";
-                this._context.setTransform(ratio, 0, 0, ratio, 0, 0);
-            }
-            Canvas.prototype.context = function () {
-                this._texture.needsUpdate = true;
-                return this._context;
-            };
-            Canvas.prototype.texture = function () {
-                return this._texture;
-            };
-            Canvas.prototype.dispose = function () {
-                this._texture.dispose();
-            };
-            return Canvas;
-        })();
-        graphics.Canvas = Canvas;
-    })(graphics = acid.graphics || (acid.graphics = {}));
-})(acid || (acid = {}));
-var acid;
-(function (acid) {
-    var graphics;
-    (function (graphics) {
-        var Console = (function () {
-            function Console(options) {
-                this.options = options;
-                this.buffer = [];
-                this.initialize();
-            }
-            Console.prototype.initialize = function () {
-                this.options = this.options || {};
-                this.options.width = this.options.width || 256;
-                this.options.height = this.options.height || 256;
-                this.options.color = this.options.color || "white";
-                this.options.backgroundColor = this.options.backgroundColor || "black";
-                this.options.font = this.options.font || "monospace";
-                this.options.fontsize = this.options.fontsize || 16;
-                this.options.lineheight = this.options.lineheight || this.options.fontsize / 4;
-                this.options.buffersize = this.options.buffersize || 1024;
-                this.canvas = new acid.graphics.Canvas({
-                    width: this.options.width,
-                    height: this.options.height
-                });
-                this.log("initialize");
-                this.clear();
-            };
-            Console.prototype.texture = function () {
-                return this.canvas.texture();
-            };
-            Console.prototype.dispose = function () {
-                this.canvas.dispose();
-            };
-            Console.prototype.clear = function () {
-                this.buffer = [];
-                this.draw();
-            };
-            Console.prototype.log = function (message) {
-                var _this = this;
-                var context = this.canvas.context();
-                if (typeof message !== "string")
-                    message = message.toString();
-                var temp = [];
-                message.split('').forEach(function (char) {
-                    temp.push(char);
-                    var metrics = context.measureText(temp.join(''));
-                    if (metrics.width > _this.options.width) {
-                        temp.pop();
-                        var line = temp.join('').trim();
-                        if (line.length > 0)
-                            _this.buffer.push(line);
-                        temp = [char];
-                    }
-                });
-                var line = temp.join('').trim();
-                if (line.length > 0)
-                    this.buffer.push(line);
-                while (this.buffer.length >
-                    this.options.buffersize)
-                    this.buffer.shift();
-                this.draw();
-            };
-            Console.prototype.draw = function () {
-                var _this = this;
-                var context = this.canvas.context();
-                var subset = this.buffer.slice(Math.max(this.buffer.length -
-                    (this.options.height / this.options.fontsize), 0)).reverse();
-                context.fillStyle = this.options.backgroundColor;
-                context.fillRect(0, 0, this.options.width, this.options.height);
-                context.font = this.options.fontsize.toString() + "px " + this.options.font;
-                context.fillStyle = this.options.color;
-                subset.forEach(function (line, index) {
-                    var y = (_this.options.height - (_this.options.lineheight * 2)) -
-                        (index * (_this.options.fontsize + _this.options.lineheight));
-                    context.fillText(line, 4, y);
-                });
-            };
-            return Console;
-        })();
-        graphics.Console = Console;
-    })(graphics = acid.graphics || (acid.graphics = {}));
-})(acid || (acid = {}));
-var acid;
-(function (acid) {
-    var graphics;
-    (function (graphics) {
-        function load_json(url) {
-            return new acid.Task(function (resolve, reject) {
-                var loader = new THREE.JSONLoader();
-                loader.load(url, function (geometry, materials) {
-                    resolve({
-                        geometry: geometry,
-                        materials: materials
-                    });
-                });
-            });
-        }
-        function load_texture(url) {
-            return new acid.Task(function (resolve, reject) {
-                var loader = new THREE.TextureLoader();
-                loader.load(url, function (texture) {
-                    resolve(texture);
-                });
-            });
-        }
-        function load(type, urls) {
-            switch (type) {
-                case "texture": return acid.Task.all(urls.map(load_texture));
-                case "json": return acid.Task.all(urls.map(load_json));
-                default: return new acid.Task(function (resolve, reject) {
-                    return reject('unknown type');
-                });
-            }
-        }
-        graphics.load = load;
     })(graphics = acid.graphics || (acid.graphics = {}));
 })(acid || (acid = {}));
 var acid;

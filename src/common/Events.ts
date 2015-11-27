@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-mxdi-js - multimedia web stuff
+acid-js - multimedia web stuff
 
 The MIT License (MIT)
 
@@ -87,9 +87,9 @@ module acid {
         }          
     }
     /**
-     * EventEmitter
+     * Events
      */
-    export class EventEmitter {
+    export class Events {
         private events: Event[] = []
         /**
         * once() : subscribes to this event once.

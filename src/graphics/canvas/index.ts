@@ -26,6 +26,5 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-/// <reference path="Events.ts" />
-/// <reference path="Task.ts" />
-/// <reference path="Queue.ts" />
+/// <reference path="Canvas.ts" />
+/// <reference path="Console.ts" />

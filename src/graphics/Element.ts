@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-mxdi-js - multimedia web stuff
+acid-js - multimedia web stuff
 
 The MIT License (MIT)
 
@@ -34,7 +34,7 @@ module acid.graphics {
 	/**
 	 * Element: wraps a html element and monitors its state.
 	 */
-	export class Element extends acid.EventEmitter {
+	export class Element extends acid.Events {
 		public width  : number;
 		public height : number;
 		constructor(private element: HTMLElement) {

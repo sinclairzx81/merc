@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-mxdi-js - multimedia web stuff
+acid-js - multimedia web stuff
 
 The MIT License (MIT)
 
@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 /// <reference path="Canvas" />
 
-module acid.graphics {
+module acid.graphics.canvas {
 	
 	/**
 	* Console options.
@@ -56,7 +56,7 @@ module acid.graphics {
 	 * Console rendering context bound to a threejs texture.
 	 */
 	export class Console  {
-		private canvas            : acid.graphics.Canvas;
+		private canvas            : acid.graphics.canvas.Canvas;
 		private buffer            : string [];
 		private ratio             : number;
 		private devicePixelRatio  : number;
@@ -65,7 +65,7 @@ module acid.graphics {
 		/**
 		* creates a new terminal.
 		*/
-		constructor(private options: ConsoleOptions) {
+		constructor(private options: ConsoleOptions) { 
 			 
 			this.buffer = []
 			this.initialize();
@@ -85,7 +85,7 @@ module acid.graphics {
 			this.options.fontsize         = this.options.fontsize         || 16;
 			this.options.lineheight       = this.options.lineheight       || this.options.fontsize / 4;
 			this.options.buffersize       = this.options.buffersize       || 1024;
-			this.canvas                   = new acid.graphics.Canvas({
+			this.canvas                   = new acid.graphics.canvas.Canvas({
 				width : this.options.width,
 				height: this.options.height
 			})

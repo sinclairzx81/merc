@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-mxdi-js - multimedia web stuff
+acid-js - multimedia web stuff
 
 The MIT License (MIT)
 
@@ -26,10 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+/// <reference path="targets/index.ts" />
+/// <reference path="effects/index.ts" />
+/// <reference path="canvas/index.ts" />
+/// <reference path="loader/index.ts" />
+
 /// <reference path="Element.ts" />
 /// <reference path="Renderer.ts" />
-/// <reference path="Target.ts" />
-/// <reference path="Effect.ts" />
-/// <reference path="Canvas.ts" />
-/// <reference path="Console.ts" />
-/// <reference path="Loader.ts" />

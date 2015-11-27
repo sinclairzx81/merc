@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-mxdi-js - multimedia web stuff
+acid-js - multimedia web stuff
 
 The MIT License (MIT)
 
@@ -26,9 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-/// <reference path="../typings.ts" />
+/// <reference path="../../typings.ts" />
 
-module acid.graphics {
+module acid.graphics.targets {
 	/**
 	 * wrapper for a three webgl render target.
 	 */

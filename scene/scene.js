@@ -25,7 +25,8 @@ acid.define([], function() {
 	//----------------------
 	// animation..
 	//----------------------
-	var animation = new acid.animation.Animation(
+	
+	var animation = new acid.animation.Animation (
 		[{time: 0,     value: { height: 0.0, offset:  3.5 } },
 		 {time: 4000,  value: { height: 1.5, offset:  3.5 } },
 		 {time: 4300,  value: { height: 3.5, offset:  7.0 } },
