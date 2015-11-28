@@ -56,7 +56,6 @@ module acid.graphics.assets {
 		return new acid.Task<THREE.Scene>((resolve, reject) => {
 			var loader = new THREE.ObjectLoader();
 			loader.load(url, ( scene:any )  => {
-				console.log(scene)
 				resolve(scene)
 			})
 		})

@@ -23,7 +23,7 @@
 					acid.loop.render(function(state) {
 						scene.update(state.runningTime)
 						var targets = scene.render(app)
-						app.renderer.setClearColor(0xFFFFFF)
+						
 						app.renderer.output(targets.scene, true) 
 					})
 				})

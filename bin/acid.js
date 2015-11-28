@@ -877,7 +877,6 @@ var acid;
                 return new acid.Task(function (resolve, reject) {
                     var loader = new THREE.ObjectLoader();
                     loader.load(url, function (scene) {
-                        console.log(scene);
                         resolve(scene);
                     });
                 });

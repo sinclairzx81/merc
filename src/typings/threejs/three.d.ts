@@ -2453,7 +2453,7 @@ declare module THREE {
         displacementBias?: number;
         specularMap?: Texture;
         alphaMap?: Texture;
-        envMap?: Texture;
+        envMap?:  Texture | CubeTexture | WebGLRenderTargetCube;
         combine?: Combine;
         reflectivity?: number;
         refractionRatio?: number;
@@ -2493,7 +2493,7 @@ declare module THREE {
         displacementBias: number;
         specularMap: Texture;
         alphaMap: Texture;
-        envMap: Texture;
+        envMap: Texture | CubeTexture | WebGLRenderTargetCube;
         combine: Combine;
         reflectivity: number;
         refractionRatio: number;
