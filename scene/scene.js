@@ -5,8 +5,8 @@ acid.define([], function() {
 	//----------------------
 	// variables..
 	//----------------------
-	var width         = 1024;
-	var	height        = 1024;	
+	var width         = 1600;
+	var	height        = 1600;	
 	var angle         = 0;
 	
 	//----------------------
@@ -18,30 +18,14 @@ acid.define([], function() {
 	}
 	var camera = new THREE.PerspectiveCamera( 90, 1, 0.1, 1000 );
 	var targets = {
-		scene: new THREE.WebGLRenderTarget(width, height, {
-			minFilter: THREE.LinearFilter,
-			maxFilter: THREE.LinearFilter
-		}),		
 		reflect: new THREE.WebGLRenderTarget(width, height, {
 			minFilter: THREE.LinearFilter,
 			maxFilter: THREE.LinearFilter
-		}),	
-		output: new THREE.WebGLRenderTarget(width, height, {
+		}),		
+		scene: new THREE.WebGLRenderTarget(width, height, {
 			minFilter: THREE.LinearFilter,
 			maxFilter: THREE.LinearFilter
-		})		
-	}
-	
-	var effects =  {
-		mix: new acid.graphics.effects.Effect(function() {/* 
-			uniform sampler2D map0;
-			uniform sampler2D map1;
-			vec4 effect(vec2 uv) {
-				vec4 a = texture2D(map0, uv);
-				vec4 b = texture2D(map1, uv);
-				return a + b;
-			}
-		*/})
+		})
 	}
 	
 	//----------------------
@@ -49,13 +33,13 @@ acid.define([], function() {
 	//----------------------
 	
 	var animation = new acid.animation.Animation (
-		[{time: 0,     value: { height: 0.0, offset:  3.5 } },
-		 {time: 4000,  value: { height: 1.5, offset:  3.5 } },
-		 {time: 4300,  value: { height: 3.5, offset:  7.0 } },
-		 {time: 8000,  value: { height: 4.5, offset:  7.5 } },
-		 {time: 8300,  value: { height: 0.5, offset:  3.5 } },
-		 {time: 12000, value: { height: 0.5, offset:  2.5 } },
-		 {time: 12300, value: { height: 0.5, offset:  3.5 } }], function(src, dst, amount) {
+		[{time: 0,      value: { height: 0.5, offset:  3.5 } },
+		 {time: 4000,   value: { height: 1.5, offset:  3.5 } },
+		 {time: 4300,   value: { height: 3.5, offset:  7.0 } },
+		 {time: 12000,  value: { height: 4.5, offset:  7.5 } },
+		 {time: 13300,  value: { height: 0.5, offset:  2.5 } },
+		 {time: 14000,  value: { height: 0.5, offset:  3.0 } },
+		 {time: 16300,  value: { height: 0.5, offset:  3.5 } }], function(src, dst, amount) {
 			return { 
 				height: acid.animation.lerp(src.height, dst.height, amount),
 				offset: acid.animation.lerp(src.offset, dst.offset, amount)
@@ -72,11 +56,15 @@ acid.define([], function() {
 		.then(function(models) {				  
 		acid.graphics.assets.load("texture", ["scene/assets/cube.jpg",
 			 								  "scene/assets/floor.jpg",
-			 								  "scene/assets/wall.jpg"])
+			 								  "scene/assets/wall.jpg",
+											  "scene/assets/test.jpg"])
 			.then(function(textures) {
 				// scene..							 					   				
 				scenes.scene.add(new THREE.Mesh(models[0].geometry, new THREE.MeshBasicMaterial( { map: textures[0] } )))
-				scenes.scene.add(new THREE.Mesh(models[1].geometry, new THREE.MeshBasicMaterial( { map: textures[1] } )))
+				scenes.scene.add(new THREE.Mesh(models[1].geometry, new acid.graphics.materials.ReflectMaterial({
+					reflection: targets.reflect,
+					map       : textures[1]
+				})));
 				scenes.scene.add(new THREE.Mesh(models[2].geometry, new THREE.MeshBasicMaterial( { map: textures[2] } )))
 				scenes.scene.add(new THREE.Mesh(models[3].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF } )))
 				
@@ -103,7 +91,6 @@ acid.define([], function() {
 				camera.position.set(position.x,  position.y, position.z);
 				camera.up = new THREE.Vector3(0, 1, 0)
 				camera.lookAt(lookat);
-			
 			if(acid.input.gamepad.enabled) 
 				angle = acid.input.gamepad.sticks.left.x * 90			
 			else
@@ -115,12 +102,9 @@ acid.define([], function() {
 				acid.graphics.cameras.reflect(camera, 
 					new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)), 
 					targets.reflect, 
-					true)				
+					true)
+					
 			app.renderer.render(scenes.scene, camera, targets.scene, true)
-			effects.mix.render(app.renderer, {
-				map0: targets.scene,
-				map1: targets.reflect
-			}, targets.output)
 			return targets;
 		}
 	}

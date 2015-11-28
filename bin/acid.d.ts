@@ -108,6 +108,16 @@ declare module acid.animation {
 declare module acid.graphics.math {
     function createReflectionMatrix(plane: THREE.Plane): THREE.Matrix4;
 }
+declare module acid.graphics.materials {
+    interface ReflectMaterialParamaters extends THREE.ShaderMaterialParameters {
+        reflection: THREE.Texture | THREE.WebGLRenderTarget;
+        map: THREE.Texture | THREE.WebGLRenderTarget;
+    }
+    class ReflectMaterial extends THREE.ShaderMaterial {
+        private options;
+        constructor(options?: ReflectMaterialParamaters);
+    }
+}
 declare module acid.graphics.targets {
     class Target extends THREE.WebGLRenderTarget {
         constructor(width: number, height: number, options?: THREE.WebGLRenderTargetOptions);

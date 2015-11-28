@@ -547,6 +547,34 @@ var acid;
 (function (acid) {
     var graphics;
     (function (graphics) {
+        var materials;
+        (function (materials) {
+            var ReflectMaterial = (function (_super) {
+                __extends(ReflectMaterial, _super);
+                function ReflectMaterial(options) {
+                    _super.call(this, {});
+                    this.options = options;
+                    this.uniforms.reflection = {
+                        type: "t",
+                        value: options.reflection
+                    };
+                    this.uniforms.map = {
+                        type: "t",
+                        value: options.map
+                    };
+                    this.vertexShader = "\n\t\t\tvarying vec4 clipspace;\n\t\t\tvarying vec2 texcoord;\n\t\t\tvoid main() {\n\t\t\t\tclipspace = projectionMatrix * \n\t\t\t\t\tmodelViewMatrix * vec4(\n\t\t\t\t\tposition.x,\n\t\t\t\t\tposition.y, \n\t\t\t\t\tposition.z,  \n\t\t\t\t\t1.0);\n\t\t\t\ttexcoord = uv;\n\t\t\t\tgl_Position = clipspace;\n\t\t\t}";
+                    this.fragmentShader = "\n\t\t\tvarying vec4      clipspace;\n\t\t\tvarying vec2      texcoord;\n\t\t\tuniform sampler2D reflection;\n\t\t\tuniform sampler2D map;\n\t\t\tvoid main() {\n\t\t\t\tvec3 ndc = clipspace.xyz / clipspace.w;\n\t\t\t\tvec4 _reflection = texture2D(reflection, ndc.xy * 0.5 + 0.5);\n\t\t\t\tvec4 _map        = texture2D(map, texcoord);\n\t\t\t\tgl_FragColor = _reflection + _map; \n\t\t\t}";
+                }
+                return ReflectMaterial;
+            })(THREE.ShaderMaterial);
+            materials.ReflectMaterial = ReflectMaterial;
+        })(materials = graphics.materials || (graphics.materials = {}));
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
+    var graphics;
+    (function (graphics) {
         var targets;
         (function (targets) {
             var Target = (function (_super) {
@@ -578,18 +606,7 @@ var acid;
                         depthWrite: false,
                         uniforms: uniforms,
                         fragmentShader: this.prepare_effect(source),
-                        vertexShader: [
-                            "varying vec2  texcoord;",
-                            "uniform vec2  resolution;",
-                            "void main() {",
-                            "texcoord = uv;",
-                            "	gl_Position = projectionMatrix * ",
-                            "		modelViewMatrix * vec4(",
-                            "		position.x * resolution.x,",
-                            "		position.y * resolution.y,",
-                            "		position.z,  1.0 );",
-                            "}"
-                        ].join('\n')
+                        vertexShader: "\n\t\t\t\tvarying vec2  texcoord;\n\t\t\t\tuniform vec2  resolution;\n\t\t\t\tvoid main() {\n\t\t\t\t\ttexcoord = uv;\n\t\t\t\t\tgl_Position = projectionMatrix * modelViewMatrix * \n\t\t\t\t\t\tvec4(position.x * resolution.x,\n\t\t\t\t\t\tposition.y * resolution.y,\n\t\t\t\t\t\tposition.z,  1.0 );\n\t\t\t\t}"
                     });
                     this.scene = new THREE.Scene();
                     this.camera = new THREE.OrthographicCamera(100, 100, 100, 100, -10000, 10000);
@@ -948,31 +965,14 @@ var acid;
                         map: { type: "t", value: null },
                         scale: { type: "v2", value: [0, 0] }
                     },
-                    vertexShader: [
-                        "varying vec2  texcoord;",
-                        "uniform vec2  scale;",
-                        "void main() {",
-                        "	texcoord = uv;",
-                        "	gl_Position = projectionMatrix * ",
-                        "		modelViewMatrix * vec4(",
-                        "		position.x * scale.x,",
-                        "		position.y * scale.y,",
-                        "		position.z,  1.0 );",
-                        "}"
-                    ].join('\n'),
-                    fragmentShader: [
-                        "varying  vec2 	texcoord;",
-                        "uniform sampler2D map;",
-                        "void main() {",
-                        "	gl_FragColor = texture2D( map, texcoord );",
-                        "}"
-                    ].join('\n')
+                    vertexShader: "\n\t\t\t\tvarying vec2  texcoord;\n\t\t\t\tuniform vec2  scale;\n\t\t\t\tvoid main() {\n\t\t\t\t\ttexcoord = uv;\n\t\t\t\t\tgl_Position = projectionMatrix * \n\t\t\t\t\t\tmodelViewMatrix * vec4(\n\t\t\t\t\t\tposition.x * scale.x,\n\t\t\t\t\t\tposition.y * scale.y, \n\t\t\t\t\t\tposition.z,  1.0 );\n\t\t\t\t}",
+                    fragmentShader: "\n\t\t\t\tvarying  vec2 \ttexcoord;\n\t\t\t\tuniform sampler2D map;\n\t\t\t\tvoid main() {\n\t\t\t\t\tgl_FragColor = texture2D( map, texcoord );\n\t\t\t\t}"
                 });
                 this.scene = new THREE.Scene();
-                this.camera = new THREE.OrthographicCamera(100, 100, 100, 100, -10000, 10000);
+                this.camera = new THREE.OrthographicCamera(1, 1, 1, 1, -10000, 10000);
                 this.plane = new THREE.PlaneBufferGeometry(1, 1);
                 this.mesh = new THREE.Mesh(this.plane, this.material);
-                this.mesh.position.z = -100;
+                this.mesh.position.z = -1;
                 this.scene.add(this.mesh);
             };
             Renderer.prototype.output = function (texture, crop) {

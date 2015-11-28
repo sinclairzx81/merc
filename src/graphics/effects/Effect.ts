@@ -52,18 +52,16 @@ module acid.graphics.effects {
 				depthWrite    : false,
 				uniforms      : uniforms,
 				fragmentShader: this.prepare_effect(source),
-				vertexShader  : [
-					"varying vec2  texcoord;",
-					"uniform vec2  resolution;",
-					"void main() {",
-					"texcoord = uv;",
-					"	gl_Position = projectionMatrix * ",
-					"		modelViewMatrix * vec4(",
-					"		position.x * resolution.x,",
-					"		position.y * resolution.y,",
-					"		position.z,  1.0 );",
-					"}"
-				].join('\n')
+				vertexShader  : `
+				varying vec2  texcoord;
+				uniform vec2  resolution;
+				void main() {
+					texcoord = uv;
+					gl_Position = projectionMatrix * modelViewMatrix * 
+						vec4(position.x * resolution.x,
+						position.y * resolution.y,
+						position.z,  1.0 );
+				}`
 			});			
 			this.scene    = new THREE.Scene();
 			this.camera   = new THREE.OrthographicCamera(100, 100, 100, 100, -10000, 10000);

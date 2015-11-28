@@ -64,31 +64,29 @@ module acid.graphics {
 					map  : { type: "t",  value: null },
 					scale: { type: "v2", value: [0, 0] } 
 				},
-				vertexShader: [
-					"varying vec2  texcoord;",
-					"uniform vec2  scale;",
-					"void main() {",
-					"	texcoord = uv;",
-					"	gl_Position = projectionMatrix * ",
-					"		modelViewMatrix * vec4(",
-					"		position.x * scale.x,",
-					"		position.y * scale.y,", 
-					"		position.z,  1.0 );",
-					"}"
-				].join('\n'),
-				fragmentShader: [
-					"varying  vec2 	texcoord;",
-					"uniform sampler2D map;",
-					"void main() {",
-					"	gl_FragColor = texture2D( map, texcoord );",
-					"}"
-				].join('\n')
+				vertexShader: `
+				varying vec2  texcoord;
+				uniform vec2  scale;
+				void main() {
+					texcoord = uv;
+					gl_Position = projectionMatrix * 
+						modelViewMatrix * vec4(
+						position.x * scale.x,
+						position.y * scale.y, 
+						position.z,  1.0 );
+				}`,
+				fragmentShader:`
+				varying  vec2 	texcoord;
+				uniform sampler2D map;
+				void main() {
+					gl_FragColor = texture2D( map, texcoord );
+				}`
 			})
 			this.scene  = new THREE.Scene()
-			this.camera = new THREE.OrthographicCamera  (100, 100, 100, 100, -10000, 10000 )
+			this.camera = new THREE.OrthographicCamera  (1, 1, 1, 1, -10000, 10000 )
 			this.plane  = new THREE.PlaneBufferGeometry (1, 1)	
 			this.mesh   = new THREE.Mesh( this.plane, this.material )
-			this.mesh.position.z = -100	
+			this.mesh.position.z = -1	
 			this.scene.add(this.mesh)			
 		}
 		

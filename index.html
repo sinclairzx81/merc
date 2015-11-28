@@ -4,6 +4,7 @@
 			body {
 				font-family: monospace;
 			}
+			
 			#container {
 				position: fixed;
 				width: 100%;
@@ -23,7 +24,7 @@
 						scene.update(state.runningTime)
 						var targets = scene.render(app)
 						app.renderer.setClearColor(0x000000)
-						app.renderer.output(targets.output, true) 
+						app.renderer.output(targets.scene, true) 
 					})
 				})
 			})
