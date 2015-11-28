@@ -873,6 +873,15 @@ var acid;
                     });
                 });
             }
+            function load_scene(url) {
+                return new acid.Task(function (resolve, reject) {
+                    var loader = new THREE.ObjectLoader();
+                    loader.load(url, function (scene) {
+                        console.log(scene);
+                        resolve(scene);
+                    });
+                });
+            }
             function load_texture(url) {
                 return new acid.Task(function (resolve, reject) {
                     var loader = new THREE.TextureLoader();
@@ -882,12 +891,25 @@ var acid;
                 });
             }
             function load(type, urls) {
-                switch (type) {
-                    case "texture": return acid.Task.all(urls.map(load_texture));
-                    case "json": return acid.Task.all(urls.map(load_json));
-                    default: return new acid.Task(function (resolve, reject) {
-                        return reject('unknown type');
-                    });
+                if (typeof urls === "string") {
+                    switch (type) {
+                        case "texture": return load_texture(urls);
+                        case "json": return load_json(urls);
+                        case "scene": return load_scene(urls);
+                        default: return new acid.Task(function (resolve, reject) {
+                            return reject('unknown type');
+                        });
+                    }
+                }
+                else {
+                    switch (type) {
+                        case "texture": return acid.Task.all(urls.map(load_texture));
+                        case "json": return acid.Task.all(urls.map(load_json));
+                        case "scene": return acid.Task.all(urls.map(load_scene));
+                        default: return new acid.Task(function (resolve, reject) {
+                            return reject('unknown type');
+                        });
+                    }
                 }
             }
             assets.load = load;

@@ -39,11 +39,25 @@ module acid.graphics.assets {
 	function load_json(url: string): acid.Task<any> {
 		return new acid.Task((resolve, reject) => {
 			var loader = new THREE.JSONLoader();
-			loader.load(url, function ( geometry, materials ) {
+			loader.load(url, ( geometry, materials ) => {
 				resolve({
 					geometry: geometry,
 					materials: materials
 				})
+			})
+		})
+	}
+	/**
+	 * loads the threejs object json format.
+	 * @param path {string} the uri of the resource.
+	 * @returns {Task} a tau Task.
+	 */	
+	function load_scene(url: string): acid.Task<THREE.Scene> {
+		return new acid.Task<THREE.Scene>((resolve, reject) => {
+			var loader = new THREE.ObjectLoader();
+			loader.load(url, ( scene:any )  => {
+				console.log(scene)
+				resolve(scene)
 			})
 		})
 	}
@@ -64,15 +78,27 @@ module acid.graphics.assets {
 	/**
 	 * loads a graphics resource
 	 * @param type {string} the type of resource to load.
-	 * @param path {string} the uri of the resource.
-	 * @returns {Task} a tau Task.
+	 * @param path {string|string[]} the url(s) of the resource.
+	 * @returns {Task<any|any[]>} a Task.
 	 */
-	export function load(type: string, urls: string[]) : acid.Task<any> {
-		switch(type) {
-			case "texture": return acid.Task.all(urls.map(load_texture))
-			case "json":    return acid.Task.all(urls.map(load_json))
-			default: return new acid.Task((resolve, reject) => 
-					reject('unknown type'))
+	export function load(type: string, urls: string |string[] ) : acid.Task<any> {
+		if(typeof urls === "string") {
+			switch(type) {
+				case "texture": return load_texture(urls)
+				case "json":    return load_json(urls)
+				case "scene":   return load_scene(urls)
+				default: return new acid.Task((resolve, reject) => 
+						reject('unknown type'))
+			}				
+		}
+		else {
+			switch(type) {
+				case "texture": return acid.Task.all(urls.map(load_texture))
+				case "json":    return acid.Task.all(urls.map(load_json))
+				case "scene":   return acid.Task.all(urls.map(load_scene))
+				default: return new acid.Task((resolve, reject) => 
+						reject('unknown type'))
+			}			
 		}
 	} 
 }

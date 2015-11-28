@@ -19,11 +19,11 @@
 		<script src="bin/acid.js"></script>
 		<script>
 			acid.graphics.app("container", function(app) {
-				acid.require(["scene/scene"], function(scene) {
+				acid.require(["merc/scene"], function(scene) {
 					acid.loop.render(function(state) {
 						scene.update(state.runningTime)
 						var targets = scene.render(app)
-						app.renderer.setClearColor(0x000000)
+						app.renderer.setClearColor(0xFFFFFF)
 						app.renderer.output(targets.scene, true) 
 					})
 				})

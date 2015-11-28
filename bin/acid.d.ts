@@ -184,7 +184,7 @@ declare module acid.graphics.canvas {
     }
 }
 declare module acid.graphics.assets {
-    function load(type: string, urls: string[]): acid.Task<any>;
+    function load(type: string, urls: string | string[]): acid.Task<any>;
 }
 declare module acid.graphics.cameras {
     function reflect(camera: THREE.PerspectiveCamera, plane: THREE.Plane): THREE.Camera;
