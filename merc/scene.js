@@ -63,8 +63,9 @@ acid.define([], function() {
 		 "merc/assets/ground.jpg"]).then(function(textures) {
 		    scene.add(cameras.camera_cube);
 			scene.fog = new THREE.FogExp2( 0xFFFFFF, 0.0125 )
+			
 			// merc
-			scene.getObjectByName("body").material        = new THREE.MeshPhongMaterial   ({ envMap: cameras.camera_cube.renderTarget, map: textures[0], specular: 0x050505,emissive: 0x111111, shininess: 100, side: THREE.DoubleSide } );
+			scene.getObjectByName("body").material        = new THREE.MeshPhongMaterial   ({ envMap: cameras.camera_cube.renderTarget, map: textures[0], specular: 0x050505,emissive: 0x111111, shininess: 23, side: THREE.DoubleSide } );
 			scene.getObjectByName("plates").material      = new THREE.MeshPhongMaterial   ({ color: 0xFFEE11,  side: THREE.DoubleSide } );
 			scene.getObjectByName("chassis").material     = new THREE.MeshPhongMaterial   ({ color: 0x000000, side: THREE.DoubleSide});
 			scene.getObjectByName("chrome").material      = new THREE.MeshPhongMaterial   ({ envMap: cameras.camera_cube.renderTarget, map: textures[1],color: 0xFFFFFF, specular: 0xFFFFFF, shininess: 100, side: THREE.DoubleSide});
@@ -76,7 +77,7 @@ acid.define([], function() {
 			scene.getObjectByName("mag1").material        = new THREE.MeshPhongMaterial   ({ envMap: cameras.camera_cube.renderTarget, map: textures[1],color: 0xFFFFFF, specular: 0xFFFFFF, shininess: 100, side: THREE.DoubleSide});
 			scene.getObjectByName("mag2").material        = new THREE.MeshPhongMaterial   ({ envMap: cameras.camera_cube.renderTarget, map: textures[1],color: 0xFFFFFF, specular: 0xFFFFFF, shininess: 100, side: THREE.DoubleSide});
 			scene.getObjectByName("mag3").material        = new THREE.MeshPhongMaterial   ({ envMap: cameras.camera_cube.renderTarget, map: textures[1],color: 0xFFFFFF, specular: 0xFFFFFF, shininess: 100, side: THREE.DoubleSide});
-			scene.getObjectByName("fender").material      = new THREE.MeshPhongMaterial   ({ map: textures[1],color: 0x000000, side: THREE.DoubleSide});
+			scene.getObjectByName("fender").material      = new THREE.MeshPhongMaterial   ({ map: textures[1], color: 0x000000, side: THREE.DoubleSide});
 			scene.getObjectByName("seats").material       = new THREE.MeshPhongMaterial   ({ color: 0xC4854D, side: THREE.DoubleSide});
 			scene.getObjectByName("interior").material    = new THREE.MeshPhongMaterial   ({ color: 0xC4854D, side: THREE.DoubleSide});			
 			scene.getObjectByName("wipers").material      = new THREE.MeshPhongMaterial   ({ color: 0xC4854D, side: THREE.DoubleSide});
@@ -91,7 +92,7 @@ acid.define([], function() {
 			scene.getObjectByName("ground").material = new acid.graphics.materials.ReflectMaterial({
 				reflection_map : targets.reflect,
 				map            : textures[3],
-				roughness      : 0.2,
+				roughness      : 0.6,
 				reflect		   : 0.3
 			});
 			
