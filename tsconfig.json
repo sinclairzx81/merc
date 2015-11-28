@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"target": "ES5",
+		"removeComments": true,
+		"declaration": true,
+		"out": "bin/acid.js"
+	},
+	"files": [
+		"src/index.ts"
+	]
+}
