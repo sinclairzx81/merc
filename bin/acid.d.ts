@@ -110,8 +110,10 @@ declare module acid.graphics.math {
 }
 declare module acid.graphics.materials {
     interface ReflectMaterialParamaters extends THREE.ShaderMaterialParameters {
-        reflection: THREE.Texture | THREE.WebGLRenderTarget;
-        map: THREE.Texture | THREE.WebGLRenderTarget;
+        reflection_map?: THREE.Texture | THREE.WebGLRenderTarget;
+        map?: THREE.Texture | THREE.WebGLRenderTarget;
+        roughness?: number;
+        reflect?: number;
     }
     class ReflectMaterial extends THREE.ShaderMaterial {
         private options;

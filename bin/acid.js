@@ -554,16 +554,24 @@ var acid;
                 function ReflectMaterial(options) {
                     _super.call(this, {});
                     this.options = options;
-                    this.uniforms.reflection = {
+                    this.uniforms.reflection_map = {
                         type: "t",
-                        value: options.reflection
+                        value: options.reflection_map
                     };
                     this.uniforms.map = {
                         type: "t",
                         value: options.map
                     };
-                    this.vertexShader = "\n\t\t\tvarying vec4 clipspace;\n\t\t\tvarying vec2 texcoord;\n\t\t\tvoid main() {\n\t\t\t\tclipspace = projectionMatrix * \n\t\t\t\t\tmodelViewMatrix * vec4(\n\t\t\t\t\tposition.x,\n\t\t\t\t\tposition.y, \n\t\t\t\t\tposition.z,  \n\t\t\t\t\t1.0);\n\t\t\t\ttexcoord = uv;\n\t\t\t\tgl_Position = clipspace;\n\t\t\t}";
-                    this.fragmentShader = "\n\t\t\tvarying vec4      clipspace;\n\t\t\tvarying vec2      texcoord;\n\t\t\tuniform sampler2D reflection;\n\t\t\tuniform sampler2D map;\n\t\t\tvoid main() {\n\t\t\t\tvec3 ndc = clipspace.xyz / clipspace.w;\n\t\t\t\tvec4 _reflection = texture2D(reflection, ndc.xy * 0.5 + 0.5);\n\t\t\t\tvec4 _map        = texture2D(map, texcoord);\n\t\t\t\tgl_FragColor = _reflection + _map; \n\t\t\t}";
+                    this.uniforms.roughness = {
+                        type: "f",
+                        value: options.roughness || 0
+                    };
+                    this.uniforms.reflect = {
+                        type: "f",
+                        value: options.reflect || 0.5
+                    };
+                    this.vertexShader = "\n\t\t\tvarying vec4 clipspace;\n\t\t\tvarying vec2 texcoord;\n\t\t\t\n\t\t\tvoid main() {\n\t\t\t\tclipspace = projectionMatrix * \n\t\t\t\t\tmodelViewMatrix * vec4(\n\t\t\t\t\tposition.x,\n\t\t\t\t\tposition.y, \n\t\t\t\t\tposition.z,  \n\t\t\t\t\t1.0);\n\t\t\t\ttexcoord = uv;\n\t\t\t\tgl_Position = clipspace;\n\t\t\t}";
+                    this.fragmentShader = "\n\t\t\tvarying vec4       clipspace;\n\t\t\tvarying vec2       texcoord;\n\t\t\tuniform sampler2D  reflection_map;\n\t\t\tuniform sampler2D  map;\n\t\t\tuniform float      roughness;\n\t\t\tuniform float      reflect;\n\t\t\t\n\t\t\tvec4 sample_map() {\n\t\t\t\treturn texture2D(map, texcoord);\n\t\t\t}\n\t\t\t\t\n\t\t\tvec4 sample_reflection_map() {\n\t\t\t\tvec3 ndc = clipspace.xyz / clipspace.w;\n\t\t\t\tvec2 reflection_uv = ndc.xy * 0.5 + 0.5;\t\t\t\t\n\t\t\t\tvec4 accumulator = vec4(0.0);\t\n\t\t\t\tvec2  kernel[14];\n\t\t\t\tkernel[ 0] = reflection_uv + vec2(0.0, -0.028) * roughness;\n\t\t\t\tkernel[ 1] = reflection_uv + vec2(0.0, -0.024) * roughness;\n\t\t\t\tkernel[ 2] = reflection_uv + vec2(0.0, -0.020) * roughness;\n\t\t\t\tkernel[ 3] = reflection_uv + vec2(0.0, -0.016) * roughness;\n\t\t\t\tkernel[ 4] = reflection_uv + vec2(0.0, -0.012) * roughness;\n\t\t\t\tkernel[ 5] = reflection_uv + vec2(0.0, -0.008) * roughness;\n\t\t\t\tkernel[ 6] = reflection_uv + vec2(0.0, -0.004) * roughness;\n\t\t\t\tkernel[ 7] = reflection_uv + vec2(0.0,  0.004) * roughness;\n\t\t\t\tkernel[ 8] = reflection_uv + vec2(0.0,  0.008) * roughness;\n\t\t\t\tkernel[ 9] = reflection_uv + vec2(0.0,  0.012) * roughness;\n\t\t\t\tkernel[10] = reflection_uv + vec2(0.0,  0.016) * roughness;\n\t\t\t\tkernel[11] = reflection_uv + vec2(0.0,  0.020) * roughness;\n\t\t\t\tkernel[12] = reflection_uv + vec2(0.0,  0.024) * roughness;\n\t\t\t\tkernel[13] = reflection_uv + vec2(0.0,  0.028) * roughness;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[ 0])*0.0044299121055113265;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[ 1])*0.00895781211794;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[ 2])*0.0215963866053;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[ 3])*0.0443683338718;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[ 4])*0.0776744219933;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[ 5])*0.115876621105;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[ 6])*0.147308056121;\n\t\t\t\taccumulator += texture2D(reflection_map, reflection_uv    )*0.159576912161;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[ 7])*0.147308056121;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[ 8])*0.115876621105;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[ 9])*0.0776744219933;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[10])*0.0443683338718;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[11])*0.0215963866053;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[12])*0.00895781211794;\n\t\t\t\taccumulator += texture2D(reflection_map, kernel[13])*0.0044299121055113265;\n\t\t\t\treturn accumulator;\n\t\t\t}\n\t\t\t\n\t\t\tvoid main() {\n\t\t\t\tvec4 _map        = sample_map();\n\t\t\t\tvec4 _reflection = sample_reflection_map();\n\t\t\t\tgl_FragColor     = _map + (_reflection * reflect);\n\t\t\t\t\n\t\t\t}";
                 }
                 return ReflectMaterial;
             })(THREE.ShaderMaterial);

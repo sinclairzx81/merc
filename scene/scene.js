@@ -62,8 +62,10 @@ acid.define([], function() {
 				// scene..							 					   				
 				scenes.scene.add(new THREE.Mesh(models[0].geometry, new THREE.MeshBasicMaterial( { map: textures[0] } )))
 				scenes.scene.add(new THREE.Mesh(models[1].geometry, new acid.graphics.materials.ReflectMaterial({
-					reflection: targets.reflect,
-					map       : textures[1]
+					reflection_map : targets.reflect,
+					map            : textures[1],
+					roughness      : 0.5,
+					gloss		   : 0.5
 				})));
 				scenes.scene.add(new THREE.Mesh(models[2].geometry, new THREE.MeshBasicMaterial( { map: textures[2] } )))
 				scenes.scene.add(new THREE.Mesh(models[3].geometry, new THREE.MeshBasicMaterial( { color: 0xFFFFFF } )))
