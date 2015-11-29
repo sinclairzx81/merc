@@ -16,7 +16,7 @@ acid.define([], function() {
 		scene   : null
 	}
 	var cameras = {
-		camera      : new THREE.PerspectiveCamera( 90, 1, 0.1, 1000 )
+		camera      : new THREE.PerspectiveCamera( 70, 1, 0.1, 1000 )
 	}
 	
 
@@ -36,13 +36,9 @@ acid.define([], function() {
 	//----------------------
 	
 	var animation = new acid.animation.Animation (
-		[{time: 0,      value: { height: 8.5, offset:  30.5 } },
-		 {time: 4000,   value: { height: 8.5, offset:  30.5 } },
-		 {time: 4300,   value: { height: 8.5, offset:  30.0 } },
-		 {time: 12000,  value: { height: 8.5, offset:  30.5 } },
-		 {time: 13300,  value: { height: 8.5, offset:  30.5 } },
-		 {time: 14000,  value: { height: 8.5, offset:  30.0 } },
-		 {time: 16300,  value: { height: 8.5, offset:  30.5 } }], function(src, dst, amount) {
+		[{time: 0,      value: { height: 4.5, offset:  20.5 } },
+		 {time: 8000,   value: { height: 9.5, offset:  15.5 } },
+		 {time: 16000,   value: { height: 4.5, offset:  20.5 } }], function(src, dst, amount) {
 			return { 
 				height: acid.animation.lerp(src.height, dst.height, amount),
 				offset: acid.animation.lerp(src.offset, dst.offset, amount)
@@ -86,7 +82,7 @@ acid.define([], function() {
 			cameras.camera.position.set(position.x,  position.y, position.z);
 			cameras.camera.up = new THREE.Vector3(0, 1, 0)
 			cameras.camera.lookAt(lookat);
-			angle = (Math.cos(time * 0.001) * 10) + 270; 
+			angle = (Math.cos(time * 0.0005) * 20) + 270; 
 		},
 		
 		render : function(app) {
