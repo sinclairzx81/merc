@@ -86,13 +86,14 @@ acid.define([], function() {
 			scene.getObjectByName("headlights").material  = new THREE.MeshPhongMaterial   ({ envMap: cameras.camera_cube.renderTarget, map: textures[2], color: 0xFFFFFF, specular: 0xFFFFFF, transparent: true, opacity: 0.9, side: THREE.DoubleSide});
 			scene.getObjectByName("rearlights").material  = new THREE.MeshPhongMaterial   ({ envMap: cameras.camera_cube.renderTarget, map: textures[1], color: 0xBB0000, transparent: true, opacity: 0.9, side: THREE.DoubleSide});
 			
+			
 			//environment
 			textures[3].wrapS = THREE.RepeatWrapping;
 			textures[3].wrapT = THREE.RepeatWrapping;
 			scene.getObjectByName("ground").material = new acid.graphics.materials.ReflectMaterial({
 				reflection_map : targets.reflect,
 				map            : textures[3],
-				roughness      : 0.6,
+				roughness      : 0.0,
 				reflect		   : 0.3
 			});
 			
