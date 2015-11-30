@@ -161,7 +161,7 @@ acid.define([], function() {
 		})
 	});
 	
-	var anglex = 0.0;
+	var anglex = 45.0;
 	var angley = 0.0;
 	var motion = new THREE.Vector3(0, 0, 0)
 	var pos    = new THREE.Vector3(-15, 4, -15)
