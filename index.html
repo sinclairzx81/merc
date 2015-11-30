@@ -19,7 +19,7 @@
 		<script src="bin/acid.js"></script>
 		<script>
 			acid.graphics.app("container", function(app) {
-				acid.require(["lightmap/scene"], function(scene) {
+				acid.require(["showroom/scene"], function(scene) {
 					acid.loop.render(function(state) {
 						scene.update(state.runningTime) 
 						var targets = scene.render(app) 
@@ -27,6 +27,8 @@
 					})
 				})
 			})
+			
+			
 		</script>
 	</head>
 	
