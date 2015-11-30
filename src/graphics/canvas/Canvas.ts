@@ -58,6 +58,10 @@ module acid.graphics.canvas {
 			this._canvas.style.height = this.options.height + "px";
 			this._context.setTransform(ratio, 0, 0, ratio, 0, 0);
 		}
+<<<<<<< HEAD
+=======
+		
+>>>>>>> master
 		/**
 		 * returns the canvas rendering context.
 		 * @returns {CanvasRenderingContext2D} the canvas context.

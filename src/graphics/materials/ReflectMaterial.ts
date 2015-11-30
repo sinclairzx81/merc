@@ -131,14 +131,21 @@ module acid.graphics.materials {
 				} else {
 					accumulator += texture2D(reflection_map, reflection_uv);
 				}
+<<<<<<< HEAD
 				return accumulator;	
+=======
+				return accumulator;
+>>>>>>> master
 			}
 			
 			void main() {
 				vec4 _map        = sample_map();
 				vec4 _reflection = sample_reflection_map();
 				gl_FragColor     = _map + (_reflection * reflect);
+<<<<<<< HEAD
 				
+=======
+>>>>>>> master
 			}`		
 		}
 	}
