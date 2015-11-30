@@ -454,6 +454,16 @@ var acid;
             return src + (delta * amount);
         }
         animation.lerp = lerp;
+        function lerp2(src, dst, amount) {
+            var delta = new THREE.Vector2(dst.x - src.x, dst.y - src.y);
+            return new THREE.Vector3(src.x + (delta.x * amount), src.y + (delta.y * amount));
+        }
+        animation.lerp2 = lerp2;
+        function lerp3(src, dst, amount) {
+            var delta = new THREE.Vector3(dst.x - src.x, dst.y - src.y, dst.z - src.z);
+            return new THREE.Vector3(src.x + (delta.x * amount), src.y + (delta.y * amount), src.z + (delta.z * amount));
+        }
+        animation.lerp3 = lerp3;
     })(animation = acid.animation || (acid.animation = {}));
 })(acid || (acid = {}));
 var acid;
@@ -472,7 +482,21 @@ var acid;
                     return 0;
                 });
             }
+            Animation.prototype.add = function (frame) {
+                this.frames.push(frame);
+                this.frames = this.frames.sort(function (a, b) {
+                    if (a.time > b.time)
+                        return 1;
+                    if (a.time < b.time)
+                        return -1;
+                    return 0;
+                });
+            };
             Animation.prototype.get = function (millisecond, repeat) {
+                if (this.frames.length == 0)
+                    throw Error("unable to get with empty frames");
+                if (this.frames.length == 1)
+                    return this.frames[0].value;
                 repeat = repeat || false;
                 var first = this.frames[0];
                 var last = this.frames[this.frames.length - 1];

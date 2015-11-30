@@ -92,6 +92,8 @@ declare module acid.input.gamepad {
 }
 declare module acid.animation {
     function lerp(src: number, dst: number, amount: number): number;
+    function lerp2(src: THREE.Vector2, dst: THREE.Vector2, amount: number): THREE.Vector3;
+    function lerp3(src: THREE.Vector3, dst: THREE.Vector3, amount: number): THREE.Vector3;
 }
 declare module acid.animation {
     interface Frame<T> {
@@ -102,6 +104,7 @@ declare module acid.animation {
         private frames;
         private interpolation;
         constructor(frames: Frame<T>[], interpolation: (src: T, dst: T, amount: number) => T);
+        add(frame: Frame<T>): void;
         get(millisecond: number, repeat: boolean): T;
     }
 }

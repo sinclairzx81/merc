@@ -49,7 +49,26 @@ module acid.animation {
 			})				
 		}
 		
+        /**
+         * adds a new frame of animation.
+         */
+        public add(frame: Frame<T>) {
+            this.frames.push(frame)
+			this.frames = this.frames.sort((a, b) => {
+				if (a.time > b.time) return  1
+				if (a.time < b.time) return -1
+				return 0
+			})	            
+        }
+        
+        /**
+         * gets the animation at this millisecond offset.
+         */        
 		public get(millisecond: number, repeat: boolean) : T { 
+            if(this.frames.length == 0)
+                throw Error("unable to get with empty frames")
+            if(this.frames.length == 1)
+                return this.frames[0].value
             repeat = repeat || false
             var first  = this.frames[0];
             var last   = this.frames[this.frames.length - 1];

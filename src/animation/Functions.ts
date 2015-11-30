@@ -26,10 +26,35 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+/// <reference path="../typings.ts" />
+
 module acid.animation {
-	
+	/** 
+     * lerp: lerps a single numberic value.
+     */
     export function lerp(src: number, dst: number, amount: number) {
         var delta = dst - src;
         return src + (delta * amount)
     }
+	/** 
+     * lerp2: lerps a THREE.Vector2 value.
+     */    
+    export function lerp2(src: THREE.Vector2, dst: THREE.Vector2, amount: number) {
+        var delta = new THREE.Vector2(dst.x - src.x, 
+                                      dst.y - src.y)   
+        return new THREE.Vector3(src.x + (delta.x * amount),
+                                 src.y + (delta.y * amount));
+    } 
+          
+	/** 
+     * lerp3: lerps a THREE.Vector3 value.
+     */    
+    export function lerp3(src: THREE.Vector3, dst: THREE.Vector3, amount: number) {
+        var delta = new THREE.Vector3(dst.x - src.x, 
+                                      dst.y - src.y, 
+                                      dst.z - src.z)   
+        return new THREE.Vector3(src.x + (delta.x * amount),
+                                 src.y + (delta.y * amount),
+                                 src.z + (delta.z * amount));
+    }    
 }
