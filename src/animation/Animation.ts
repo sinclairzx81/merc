@@ -49,9 +49,6 @@ module acid.animation {
 			})				
 		}
 		
-<<<<<<< HEAD
-		public get(millisecond: number, repeat: boolean) : T { 
-=======
         /**
          * adds a new frame of animation.
          */
@@ -72,7 +69,6 @@ module acid.animation {
                 throw Error("unable to get with empty frames")
             if(this.frames.length == 1)
                 return this.frames[0].value
->>>>>>> master
             repeat = repeat || false
             var first  = this.frames[0];
             var last   = this.frames[this.frames.length - 1];

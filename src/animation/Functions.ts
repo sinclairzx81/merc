@@ -26,23 +26,16 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-module acid.animation {
-	
-=======
 /// <reference path="../typings.ts" />
 
 module acid.animation {
 	/** 
      * lerp: lerps a single numberic value.
      */
->>>>>>> master
     export function lerp(src: number, dst: number, amount: number) {
         var delta = dst - src;
         return src + (delta * amount)
     }
-<<<<<<< HEAD
-=======
 	/** 
      * lerp2: lerps a THREE.Vector2 value.
      */    
@@ -64,5 +57,4 @@ module acid.animation {
                                  src.y + (delta.y * amount),
                                  src.z + (delta.z * amount));
     }    
->>>>>>> master
 }

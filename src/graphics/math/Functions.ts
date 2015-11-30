@@ -30,38 +30,12 @@ THE SOFTWARE.
 
 module acid.graphics.math {
 	/**
-<<<<<<< HEAD
-	 * creates a new reflection matrix about this plane.
-=======
 	 * creates a new reflection matrix about this plane. The result matrix
 	 * can be multiplied against any other matrix to reflect it.
->>>>>>> master
 	 */
 	export function createReflectionMatrix(plane: THREE.Plane) : THREE.Matrix4 {
 		var n = plane.normalize()
 		var m = new THREE.Matrix4()
-<<<<<<< HEAD
-		var m11 =  1.0 - 2.0 * n.normal.x * n.normal.x;
-		var m12 =  2.0       * n.normal.x * n.normal.y;
-		var m13 =  2.0       * n.normal.x * n.normal.z;
-		var m14 =  0.0;
-		var m21 = -2.0       * n.normal.x * n.normal.y;
-		var m22  = 1.0 - 2.0 * n.normal.y * n.normal.y;
-		var m23 = -2.0       * n.normal.y * n.normal.z;
-		var m24 =  0.0;
-		var m31 = -2.0       * n.normal.z * n.normal.x;
-		var m32 = -2.0       * n.normal.z * n.normal.y;
-		var m33 =  1.0 - 2.0 * n.normal.z * n.normal.z;
-		var m34 =  0.0;
-		var m41 = -2.0 * n.constant * n.normal.x;
-		var m42 = -2.0 * n.constant * n.normal.y;
-		var m43 = -2.0 * n.constant * n.normal.z;
-		var m44 =  1.0;
-		return m.set(m11, m12, m13, m14,
-					 m21, m22, m23, m24,
-					 m31, m32, m33, m34,
-					 m41, m42, m43, m44);			 
-=======
 		return m.set(
 			 1.0 - 2.0 * n.normal.x * n.normal.x, 
 			 2.0 * n.normal.x * n.normal.y, 
@@ -79,6 +53,5 @@ module acid.graphics.math {
 			-2.0 * n.constant * n.normal.y, 
 			-2.0 * n.constant * n.normal.z, 
 			 1.0);			 
->>>>>>> master
 	}
 }
