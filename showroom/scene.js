@@ -72,7 +72,8 @@ acid.define([], function() {
 				map            : textures[4],
 				roughness      : 0.4,
 				reflect		   : 0.3
-			});			
+			});
+					
 			//-------------------------------
 			// car
 			//-------------------------------
@@ -117,7 +118,7 @@ acid.define([], function() {
 		
 		render : function(app) {
 			if(scenes.scene) {
-				app.renderer.setClearColor(0x666666)	
+				app.renderer.setClearColor(0xCCCCCC)	
 				//--------------------------------------
 				// render reflection planes
 				//--------------------------------------
