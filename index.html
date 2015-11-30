@@ -19,6 +19,7 @@
 		<script src="bin/acid.js"></script>
 		<script>
 			acid.graphics.app("container", function(app) {
+<<<<<<< HEAD
 				acid.require(["merc/scene"], function(scene) {
 					acid.loop.render(function(state) {
 						scene.update(state.runningTime)
@@ -28,6 +29,18 @@
 					})
 				})
 			})
+=======
+				acid.require(["showroom/scene"], function(scene) {
+					acid.loop.render(function(state) {
+						scene.update(state.runningTime) 
+						var targets = scene.render(app) 
+						app.renderer.output(targets.scene, true)
+					})
+				})
+			})
+			
+			
+>>>>>>> master
 		</script>
 	</head>
 	

@@ -40,9 +40,13 @@ module acid.graphics.cameras {
 	export function reflect(camera: THREE.PerspectiveCamera, plane: THREE.Plane) : THREE.Camera {
 		var reflect = camera.clone()
 		reflect.matrixAutoUpdate = false;
+<<<<<<< HEAD
 		reflect.matrix.identity()
 		reflect.matrix.multiply(acid.graphics.math.createReflectionMatrix(plane))
 		//reflect.matrix.multiply(camera.matrix.scale(new THREE.Vector3(-1, -1, 1)))
+=======
+		reflect.matrix.copy(acid.graphics.math.createReflectionMatrix(plane))
+>>>>>>> master
 		reflect.matrix.multiply(camera.matrix)
 		reflect.updateProjectionMatrix();
 		reflect.updateMatrixWorld(true);
