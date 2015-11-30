@@ -161,26 +161,57 @@ acid.define([], function() {
 		})
 	});
 	
+	var anglex = 0.0;
+	var angley = 0.0;
+	var motion = new THREE.Vector3(0, 0, 0)
+	var pos    = new THREE.Vector3(-15, 4, -15)
 	return {
 		update : function(time) {
 			if(scenes.scene) {
-			/*
-			var x = Math.sin(time * 0.01 * Math.PI / 180) * 15;
-			var transform =  {
-				position : new THREE.Vector3(x, 5, -15),
-				lookat   : new THREE.Vector3(0, 0, 0),
-				up       : new THREE.Vector3(0, 1, 0)
-			}
-			*/
-			var transform =  animation.get(time, true)
-			//var transform =  animation.get(16000.1, false)
-			
-			
-			cameras.camera.up = transform.up
-			cameras.camera.lookAt(transform.target);			
-			cameras.camera.position.set(transform.position.x,  
-										transform.position.y, 
-										transform.position.z);
+				if(acid.input.gamepad.enabled) {
+					if(acid.input.gamepad.sticks.right.x > 0.31 ||
+					   acid.input.gamepad.sticks.right.x < -0.31)
+						anglex -= acid.input.gamepad.sticks.right.x * 2
+					if(acid.input.gamepad.sticks.right.y > 0.32 ||
+					   acid.input.gamepad.sticks.right.y < -0.32) {
+							angley -= acid.input.gamepad.sticks.right.y * 0.05
+							if(angley > 1)  angley = 1;
+							if(angley < -1) angley = -1;   
+					   }
+					if(acid.input.gamepad.sticks.left.y > 0.3 ||
+					   acid.input.gamepad.sticks.left.y < -0.3) {
+						  motion.add(new THREE.Vector3(
+							  			Math.sin(anglex * 3.14 / 180) * acid.input.gamepad.sticks.left.y * -0.2, 0,
+						  				Math.cos(anglex * 3.14 / 180) * acid.input.gamepad.sticks.left.y * -0.2))
+					   }			 				
+					if(acid.input.gamepad.sticks.left.x > 0.3 ||
+					   acid.input.gamepad.sticks.left.x < -0.3) {
+						  motion.add(new THREE.Vector3
+						  				((Math.cos(anglex * 3.14 / 180) * acid.input.gamepad.sticks.left.x * -0.2), 0,
+						  			    -(Math.sin(anglex * 3.14 / 180) * acid.input.gamepad.sticks.left.x * -0.2)))
+					   }
+					   						
+					motion = motion.multiplyScalar(0.4)
+					pos.add(motion)	
+					var position = pos
+					var target   = new THREE.Vector3(position.x + Math.sin(anglex * 3.14 / 180), angley + 4, 
+													 position.z + Math.cos(anglex * 3.14 / 180))
+					var up       = new THREE.Vector3(0, 1, 0)
+					
+					cameras.camera.up = up
+					cameras.camera.lookAt(target);			
+					cameras.camera.position.set(position.x,  
+												position.y, 
+												position.z);					
+				} else {
+					var transform =  animation.get(time, true)
+					cameras.camera.up = transform.up
+					cameras.camera.lookAt(transform.target);			
+					cameras.camera.position.set(transform.position.x,  
+												transform.position.y, 
+												transform.position.z);					
+				}
+
 			}
 		},
 		
