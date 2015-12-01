@@ -89,11 +89,9 @@ module acid.animation {
             }
             var delta_0 = dst.time - src.time;
             var delta_1 = dst.time - millisecond;
-            var amount  = (delta_1 != 0) ? delta_1 / delta_0 : 0;
-            amount = -amount + 1;
+            var amount  = (delta_1 != 0.0) ? delta_1 / delta_0 : 0.0;
+            amount = -amount + 1.0;
             return this.interpolation(src.value, dst.value, amount)			
 		}
 	}
-    
-    
 }
