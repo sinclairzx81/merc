@@ -6,8 +6,7 @@ acid.define([], function() {
 	// variables..
 	//----------------------
 	var width         = 1600;
-	var	height        = 1600;	
-	var angle         = 0;
+	var	height        = 1600;
 	
 	//----------------------
 	// scene..
@@ -53,13 +52,10 @@ acid.define([], function() {
 			"showroom/assets/display-top.jpg",
 			"showroom/assets/stage-panel.jpg",
 		]).then(function(textures) {
-			console.log(scene)
 			
 			//-------------------------------
 			// environment
 			//-------------------------------
-			scene.getObjectByName("display-bottom").material  = new THREE.MeshBasicMaterial({color: 0x000000,   wireframe: false,   side: THREE.DoubleSide});
-			scene.getObjectByName("display-top").material     = new THREE.MeshBasicMaterial({map: textures[5],  wireframe: false, side: THREE.DoubleSide});
 			scene.getObjectByName("room-arch").material       = new THREE.MeshBasicMaterial({map: textures[2],  wireframe: false, side: THREE.DoubleSide});
 			scene.getObjectByName("room-ceiling").material    = new THREE.MeshBasicMaterial({map: textures[3],  wireframe: false, side: THREE.DoubleSide});
 			scene.getObjectByName("room-floor").material      = new THREE.MeshBasicMaterial({map: textures[0],  wireframe: false, side: THREE.DoubleSide});
@@ -86,13 +82,13 @@ acid.define([], function() {
 			//-------------------------------
 			var car_environment_cubemap  = new THREE.CubeCamera(1, 1000, 512);
 			car_environment_cubemap.name = "car-environment-cubemap";
-			car_environment_cubemap.position.set(0, 2, 0)
+			car_environment_cubemap.position.set(0, 1, 0)
 			scene.add(car_environment_cubemap)
 			
 			//-------------------------------
 			// car
 			//-------------------------------			
-			scene.getObjectByName("car-panels").material       = new THREE.MeshPhongMaterial({ envMap: car_environment_cubemap.renderTarget, color: 0x000000, specular: 0xBBBBBB, emissive: 0x333333, shininess: 30, side: THREE.DoubleSide } );
+			scene.getObjectByName("car-panels").material       = new THREE.MeshPhongMaterial({ envMap: car_environment_cubemap.renderTarget, color: 0x222222, specular: 0x222222, emissive: 0x333333, shininess: 5, side: THREE.DoubleSide } );
 			scene.getObjectByName("car-chassis").material      = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: false, side: THREE.DoubleSide});
 			scene.getObjectByName("car-chrome").material       = new THREE.MeshPhongMaterial({ envMap: car_environment_cubemap.renderTarget, color: 0xFFFFFF, specular: 0xFFFFFF, emissive: 0xFFFFFF, shininess: 100, side: THREE.DoubleSide});
 			scene.getObjectByName("car-fender").material       = new THREE.MeshPhongMaterial({ color: 0x000000, side: THREE.DoubleSide});
@@ -161,19 +157,21 @@ acid.define([], function() {
 		})
 	});
 	
-	var anglex = 45.0;
-	var angley = 0.0;
-	var motion = new THREE.Vector3(0, 0, 0)
-	var pos    = new THREE.Vector3(-15, 4, -15)
+	var anglex    = 45.0;
+	var angley    = 0.0;
+	var motion    = new THREE.Vector3(0, 0, 0)
+	var pos       = new THREE.Vector3(-15, 4, -15)
+	var firstpass = true;
+	
 	return {
 		update : function(time) {
 			if(scenes.scene) {
 				if(acid.input.gamepad.enabled) {
-					if(acid.input.gamepad.sticks.right.x > 0.31 ||
-					   acid.input.gamepad.sticks.right.x < -0.31)
+					if(acid.input.gamepad.sticks.right.x > 0.3 ||
+					   acid.input.gamepad.sticks.right.x < -0.3)
 						anglex -= acid.input.gamepad.sticks.right.x * 2
-					if(acid.input.gamepad.sticks.right.y > 0.32 ||
-					   acid.input.gamepad.sticks.right.y < -0.32) {
+					if(acid.input.gamepad.sticks.right.y > 0.3 ||
+					   acid.input.gamepad.sticks.right.y < -0.3) {
 							angley -= acid.input.gamepad.sticks.right.y * 0.05
 							if(angley > 1)  angley = 1;
 							if(angley < -1) angley = -1;   
@@ -183,7 +181,7 @@ acid.define([], function() {
 						  motion.add(new THREE.Vector3(
 							  			Math.sin(anglex * 3.14 / 180) * acid.input.gamepad.sticks.left.y * -0.2, 0,
 						  				Math.cos(anglex * 3.14 / 180) * acid.input.gamepad.sticks.left.y * -0.2))
-					   }			 				
+					   }		 				
 					if(acid.input.gamepad.sticks.left.x > 0.3 ||
 					   acid.input.gamepad.sticks.left.x < -0.3) {
 						  motion.add(new THREE.Vector3
@@ -197,12 +195,9 @@ acid.define([], function() {
 					var target   = new THREE.Vector3(position.x + Math.sin(anglex * 3.14 / 180), angley + 4, 
 													 position.z + Math.cos(anglex * 3.14 / 180))
 					var up       = new THREE.Vector3(0, 1, 0)
-					
 					cameras.camera.up = up
 					cameras.camera.lookAt(target);			
-					cameras.camera.position.set(position.x,  
-												position.y, 
-												position.z);					
+					cameras.camera.position.set(position.x,  position.y, position.z);					
 				} else {
 					var transform =  animation.get(time, true)
 					cameras.camera.up = transform.up
@@ -214,10 +209,20 @@ acid.define([], function() {
 
 			}
 		},
-		
 		render : function(app) {
 			if(scenes.scene) {
 				app.renderer.setClearColor(0xCCCCCC)	
+				
+				if(firstpass) {
+					//---------------------------------------
+					// render car environment map
+					//---------------------------------------
+					scenes.scene.getObjectByName("car").visible = false;						
+					scenes.scene.getObjectByName("car-environment-cubemap").updateCubeMap( app.renderer, scenes.scene );
+					scenes.scene.getObjectByName("car").visible = true;
+					firstpass = false						
+				}
+				
 				//--------------------------------------
 				// render reflection planes
 				//--------------------------------------
@@ -229,18 +234,8 @@ acid.define([], function() {
 						targets.reflect, 
 						true)
 				scenes.scene.getObjectByName("room-floor").visible  = true;	
-				scenes.scene.getObjectByName("stage-floor").visible = true;			
-				
-				
-				
-				//---------------------------------------
-				// render car environment map
-				//---------------------------------------
-				scenes.scene.getObjectByName("car").visible = false;						
-				scenes.scene.getObjectByName("car-environment-cubemap").updateCubeMap( app.renderer, scenes.scene );
-				scenes.scene.getObjectByName("car").visible = true;				
-				
-									
+				scenes.scene.getObjectByName("stage-floor").visible = true;
+								
 				app.renderer.render(scenes.scene, cameras.camera, targets.scene, true)				
 			}
 
