@@ -49,7 +49,6 @@ acid.define([], function() {
 			"showroom/assets/room-arch.jpg",
 			"showroom/assets/room-ceiling.jpg",
 			"showroom/assets/stage-floor.jpg",
-			"showroom/assets/display-top.jpg",
 			"showroom/assets/stage-panel.jpg",
 		]).then(function(textures) {
 			
@@ -62,7 +61,7 @@ acid.define([], function() {
 			scene.getObjectByName("room-wall").material       = new THREE.MeshBasicMaterial({map: textures[1],  wireframe: false, side: THREE.DoubleSide});
 			scene.getObjectByName("stage-floor").material     = new THREE.MeshBasicMaterial({map: textures[4],  wireframe: false, side: THREE.DoubleSide});
 			scene.getObjectByName("stage-light").material     = new THREE.MeshBasicMaterial({color: 0xFFFFFF,   wireframe: false, side: THREE.DoubleSide});
-			scene.getObjectByName("stage-panel").material     = new THREE.MeshBasicMaterial({map: textures[6],  wireframe: false, side: THREE.DoubleSide});
+			scene.getObjectByName("stage-panel").material     = new THREE.MeshBasicMaterial({map: textures[5],  wireframe: false, side: THREE.DoubleSide});
 			scene.getObjectByName("stage-wall").material      = new THREE.MeshPhongMaterial({color: 0x333333,   transparent: true, opacity: 0.8, side: THREE.DoubleSide});
 			scene.getObjectByName("room-floor").material = new acid.graphics.materials.ReflectMaterial({
 				reflection_map : targets.reflect,
