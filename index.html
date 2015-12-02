@@ -7,13 +7,23 @@
 			
 			#container {
 				position: fixed;
-				width: 100%;
-				height: 100%;
-				left: 0;
-				top: 0;
-				background: rgba(51,51,51,0.7);
-				z-index: 10;
+				width   : 100%;
+				height  : 100%;
+				left    : 0;
+				top     : 0;
+				z-index : 10;
 			}
+			
+			#overlay {
+				position     : fixed;
+				padding-left : 10px;
+				width        : 400px;
+				height       : 90px;
+				left         : 0;
+				top          : 0;
+				background   : rgba(255,255,255, 0.25);
+				z-index      : 10;
+			}			
 		</style>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.min.js"></script>
 		<script src="bin/acid.js"></script>
@@ -21,19 +31,20 @@
 			acid.graphics.app("container", function(app) {
 				acid.require(["showroom/scene"], function(scene) {
 					acid.loop.render(function(state) {
-						scene.update(state.runningTime) 
-						var targets = scene.render(app) 
+						scene.update(state.runningTime)
+						var targets = scene.render(app.renderer)
 						app.renderer.output(targets.scene, true)
 					})
 				})
 			})
-			
-			
 		</script>
+		<title>Mercedes-Benz CLK GTR</title>
 	</head>
-	
 	<body>
-		<div id="container">
+		<div id="container" />
+		<div id="overlay">
+			<h2>Mercedes-Benz CLK GTR</h2>
+			<p>sinclair - November 2015</p>
 		</div>
 	</body>
 </html>

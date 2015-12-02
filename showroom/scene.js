@@ -208,16 +208,16 @@ acid.define([], function() {
 
 			}
 		},
-		render : function(app) {
+		render : function(renderer) {
 			if(scenes.scene) {
-				app.renderer.setClearColor(0xCCCCCC)	
+				renderer.setClearColor(0xFFFFFF)	
 				
 				if(firstpass) {
 					//---------------------------------------
 					// render car environment map
 					//---------------------------------------
 					scenes.scene.getObjectByName("car").visible = false;						
-					scenes.scene.getObjectByName("car-environment-cubemap").updateCubeMap( app.renderer, scenes.scene );
+					scenes.scene.getObjectByName("car-environment-cubemap").updateCubeMap( renderer, scenes.scene );
 					scenes.scene.getObjectByName("car").visible = true;
 					firstpass = false						
 				}
@@ -227,7 +227,7 @@ acid.define([], function() {
 				//--------------------------------------
 				scenes.scene.getObjectByName("room-floor").visible  = false;	
 				scenes.scene.getObjectByName("stage-floor").visible = false;
-				app.renderer.render(scenes.scene, 
+				renderer.render(scenes.scene, 
 					acid.graphics.cameras.reflect(cameras.camera, 
 						new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)), 
 						targets.reflect, 
@@ -235,7 +235,7 @@ acid.define([], function() {
 				scenes.scene.getObjectByName("room-floor").visible  = true;	
 				scenes.scene.getObjectByName("stage-floor").visible = true;
 								
-				app.renderer.render(scenes.scene, cameras.camera, targets.scene, true)				
+				renderer.render(scenes.scene, cameras.camera, targets.scene, true)				
 			}
 
 			return targets;
