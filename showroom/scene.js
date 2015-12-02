@@ -41,8 +41,8 @@ acid.define([], function() {
 	//----------------------
 	// lazy load scene.
 	//----------------------
-	acid.graphics.assets.load("scene", 
-		"showroom/assets/scene.json").then(function(scene) {
+	acid.graphics.assets.load("msgpack", 
+		"showroom/assets/scene.pack").then(function(scene) {
 		acid.graphics.assets.load("texture", [
 			"showroom/assets/room-floor.jpg",
 			"showroom/assets/room-wall.jpg",

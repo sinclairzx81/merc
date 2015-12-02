@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 /// <reference path="../../typings.ts" />
 /// <reference path="../../common/Task.ts" />
+/// <reference path="msgpack.ts" />
 
 module acid.graphics.assets {
 	
@@ -62,6 +63,26 @@ module acid.graphics.assets {
 	}
 	
 	/**
+	 * loads the threejs object json format.
+	 * @param path {string} the uri of the resource.
+	 * @returns {Task} a tau Task.
+	 */	
+	function load_msgpack(url: string): acid.Task<THREE.Scene> {
+		return new acid.Task<THREE.Scene>((resolve, reject) => {
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', url, true);
+			xhr.responseType = 'arraybuffer';
+			xhr.addEventListener("load", e => {
+				var decoded = msgpack.decode( xhr.response )
+				var loader  = new THREE.ObjectLoader();
+				var scene   = <THREE.Scene>loader.parse( decoded )
+				resolve(scene)
+			}, false)
+			xhr.send();	
+		})
+	}
+		
+	/**
 	 * loads a texture.
 	 * @param path {string} the uri of the resource.
 	 * @returns {Task} a tau Task.
@@ -83,18 +104,20 @@ module acid.graphics.assets {
 	export function load(type: string, urls: string |string[] ) : acid.Task<any> {
 		if(typeof urls === "string") {
 			switch(type) {
-				case "texture": return load_texture(urls)
-				case "json":    return load_json(urls)
-				case "scene":   return load_scene(urls)
+				case "texture":  return load_texture(urls)
+				case "json":     return load_json(urls)
+				case "scene":    return load_scene(urls)
+				case "msgpack":  return load_msgpack(urls)
 				default: return new acid.Task((resolve, reject) => 
 						reject('unknown type'))
 			}				
 		}
 		else {
 			switch(type) {
-				case "texture": return acid.Task.all(urls.map(load_texture))
-				case "json":    return acid.Task.all(urls.map(load_json))
-				case "scene":   return acid.Task.all(urls.map(load_scene))
+				case "texture":   return acid.Task.all(urls.map(load_texture))
+				case "json":      return acid.Task.all(urls.map(load_json))
+				case "scene":     return acid.Task.all(urls.map(load_scene))
+				case "msgpack":   return acid.Task.all(urls.map(load_msgpack))
 				default: return new acid.Task((resolve, reject) => 
 						reject('unknown type'))
 			}			

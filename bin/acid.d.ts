@@ -186,6 +186,11 @@ declare module acid.graphics.canvas {
         private draw();
     }
 }
+declare module acid.graphics.assets.msgpack {
+    function inspect(buffer: any): string;
+    function encode(value: any): ArrayBuffer;
+    function decode(buffer: any): any;
+}
 declare module acid.graphics.assets {
     function load(type: string, urls: string | string[]): acid.Task<any>;
 }

@@ -461,6 +461,9 @@ var acid;
         animation.lerp2 = lerp2;
         function lerp3(src, dst, amount) {
             var delta = new THREE.Vector3(dst.x - src.x, dst.y - src.y, dst.z - src.z);
+            if (amount == NaN) {
+                throw Error("ok");
+            }
             return new THREE.Vector3(src.x + (delta.x * amount), src.y + (delta.y * amount), src.z + (delta.z * amount));
         }
         animation.lerp3 = lerp3;
@@ -522,8 +525,8 @@ var acid;
                 }
                 var delta_0 = dst.time - src.time;
                 var delta_1 = dst.time - millisecond;
-                var amount = (delta_1 != 0) ? delta_1 / delta_0 : 0;
-                amount = -amount + 1;
+                var amount = (delta_1 != 0.0) ? delta_1 / delta_0 : 0.0;
+                amount = -amount + 1.0;
                 return this.interpolation(src.value, dst.value, amount);
             };
             return Animation;
@@ -870,6 +873,553 @@ var acid;
     (function (graphics) {
         var assets;
         (function (assets) {
+            var msgpack;
+            (function (msgpack) {
+                function inspect(buffer) {
+                    if (buffer === undefined)
+                        return "undefined";
+                    var view;
+                    var type;
+                    if (buffer instanceof ArrayBuffer) {
+                        type = "ArrayBuffer";
+                        view = new DataView(buffer);
+                    }
+                    else if (buffer instanceof DataView) {
+                        type = "DataView";
+                        view = buffer;
+                    }
+                    if (!view)
+                        return JSON.stringify(buffer);
+                    var bytes = [];
+                    for (var i = 0; i < buffer.byteLength; i++) {
+                        if (i > 20) {
+                            bytes.push("...");
+                            break;
+                        }
+                        var byte = view.getUint8(i).toString(16);
+                        if (byte.length === 1)
+                            byte = "0" + byte;
+                        bytes.push(byte);
+                    }
+                    return "<" + type + " " + bytes.join(" ") + ">";
+                }
+                msgpack.inspect = inspect;
+                function utf8Write(view, offset, string) {
+                    var byteLength = view.byteLength;
+                    for (var i = 0, l = string.length; i < l; i++) {
+                        var codePoint = string.charCodeAt(i);
+                        if (codePoint < 0x80) {
+                            view.setUint8(offset++, codePoint >>> 0 & 0x7f | 0x00);
+                            continue;
+                        }
+                        if (codePoint < 0x800) {
+                            view.setUint8(offset++, codePoint >>> 6 & 0x1f | 0xc0);
+                            view.setUint8(offset++, codePoint >>> 0 & 0x3f | 0x80);
+                            continue;
+                        }
+                        if (codePoint < 0x10000) {
+                            view.setUint8(offset++, codePoint >>> 12 & 0x0f | 0xe0);
+                            view.setUint8(offset++, codePoint >>> 6 & 0x3f | 0x80);
+                            view.setUint8(offset++, codePoint >>> 0 & 0x3f | 0x80);
+                            continue;
+                        }
+                        if (codePoint < 0x110000) {
+                            view.setUint8(offset++, codePoint >>> 18 & 0x07 | 0xf0);
+                            view.setUint8(offset++, codePoint >>> 12 & 0x3f | 0x80);
+                            view.setUint8(offset++, codePoint >>> 6 & 0x3f | 0x80);
+                            view.setUint8(offset++, codePoint >>> 0 & 0x3f | 0x80);
+                            continue;
+                        }
+                        throw new Error("bad codepoint " + codePoint);
+                    }
+                }
+                function utf8Read(view, offset, length) {
+                    var string = "";
+                    for (var i = offset, end = offset + length; i < end; i++) {
+                        var byte = view.getUint8(i);
+                        if ((byte & 0x80) === 0x00) {
+                            string += String.fromCharCode(byte);
+                            continue;
+                        }
+                        if ((byte & 0xe0) === 0xc0) {
+                            string += String.fromCharCode(((byte & 0x0f) << 6) |
+                                (view.getUint8(++i) & 0x3f));
+                            continue;
+                        }
+                        if ((byte & 0xf0) === 0xe0) {
+                            string += String.fromCharCode(((byte & 0x0f) << 12) |
+                                ((view.getUint8(++i) & 0x3f) << 6) |
+                                ((view.getUint8(++i) & 0x3f) << 0));
+                            continue;
+                        }
+                        if ((byte & 0xf8) === 0xf0) {
+                            string += String.fromCharCode(((byte & 0x07) << 18) |
+                                ((view.getUint8(++i) & 0x3f) << 12) |
+                                ((view.getUint8(++i) & 0x3f) << 6) |
+                                ((view.getUint8(++i) & 0x3f) << 0));
+                            continue;
+                        }
+                        throw new Error("Invalid byte " + byte.toString(16));
+                    }
+                    return string;
+                }
+                function utf8ByteCount(string) {
+                    var count = 0;
+                    for (var i = 0, l = string.length; i < l; i++) {
+                        var codePoint = string.charCodeAt(i);
+                        if (codePoint < 0x80) {
+                            count += 1;
+                            continue;
+                        }
+                        if (codePoint < 0x800) {
+                            count += 2;
+                            continue;
+                        }
+                        if (codePoint < 0x10000) {
+                            count += 3;
+                            continue;
+                        }
+                        if (codePoint < 0x110000) {
+                            count += 4;
+                            continue;
+                        }
+                        throw new Error("bad codepoint " + codePoint);
+                    }
+                    return count;
+                }
+                var Decoder = (function () {
+                    function Decoder(view, offset) {
+                        this.view = view;
+                        this.offset = offset;
+                        this.offset = offset || 0;
+                        this.view = view;
+                    }
+                    Decoder.prototype.map = function (length) {
+                        var value = {};
+                        for (var i = 0; i < length; i++) {
+                            var key = this.parse();
+                            value[key] = this.parse();
+                        }
+                        return value;
+                    };
+                    Decoder.prototype.bin = function (length) {
+                        var value = new ArrayBuffer(length);
+                        (new Uint8Array(value)).set(new Uint8Array(this.view.buffer, this.offset, length), 0);
+                        this.offset += length;
+                        return value;
+                    };
+                    Decoder.prototype.str = function (length) {
+                        var value = utf8Read(this.view, this.offset, length);
+                        this.offset += length;
+                        return value;
+                    };
+                    Decoder.prototype.array = function (length) {
+                        var value = new Array(length);
+                        for (var i = 0; i < length; i++) {
+                            value[i] = this.parse();
+                        }
+                        return value;
+                    };
+                    Decoder.prototype.parse = function () {
+                        var type = this.view.getUint8(this.offset);
+                        var value, length;
+                        if ((type & 0xe0) === 0xa0) {
+                            length = type & 0x1f;
+                            this.offset++;
+                            return this.str(length);
+                        }
+                        if ((type & 0xf0) === 0x80) {
+                            length = type & 0x0f;
+                            this.offset++;
+                            return this.map(length);
+                        }
+                        if ((type & 0xf0) === 0x90) {
+                            length = type & 0x0f;
+                            this.offset++;
+                            return this.array(length);
+                        }
+                        if ((type & 0x80) === 0x00) {
+                            this.offset++;
+                            return type;
+                        }
+                        if ((type & 0xe0) === 0xe0) {
+                            value = this.view.getInt8(this.offset);
+                            this.offset++;
+                            return value;
+                        }
+                        if (type === 0xd4 && this.view.getUint8(this.offset + 1) === 0x00) {
+                            this.offset += 3;
+                            return undefined;
+                        }
+                        switch (type) {
+                            case 0xd9:
+                                length = this.view.getUint8(this.offset + 1);
+                                this.offset += 2;
+                                return this.str(length);
+                            case 0xda:
+                                length = this.view.getUint16(this.offset + 1);
+                                this.offset += 3;
+                                return this.str(length);
+                            case 0xdb:
+                                length = this.view.getUint32(this.offset + 1);
+                                this.offset += 5;
+                                return this.str(length);
+                            case 0xc4:
+                                length = this.view.getUint8(this.offset + 1);
+                                this.offset += 2;
+                                return this.bin(length);
+                            case 0xc5:
+                                length = this.view.getUint16(this.offset + 1);
+                                this.offset += 3;
+                                return this.bin(length);
+                            case 0xc6:
+                                length = this.view.getUint32(this.offset + 1);
+                                this.offset += 5;
+                                return this.bin(length);
+                            case 0xc0:
+                                this.offset++;
+                                return null;
+                            case 0xc2:
+                                this.offset++;
+                                return false;
+                            case 0xc3:
+                                this.offset++;
+                                return true;
+                            case 0xcc:
+                                value = this.view.getUint8(this.offset + 1);
+                                this.offset += 2;
+                                return value;
+                            case 0xcd:
+                                value = this.view.getUint16(this.offset + 1);
+                                this.offset += 3;
+                                return value;
+                            case 0xce:
+                                value = this.view.getUint32(this.offset + 1);
+                                this.offset += 5;
+                                return value;
+                            case 0xcf:
+                                var high = this.view.getUint32(this.offset + 1);
+                                var low = this.view.getUint32(this.offset + 5);
+                                value = high * 0x100000000 + low;
+                                this.offset += 9;
+                                return value;
+                            case 0xd0:
+                                value = this.view.getInt8(this.offset + 1);
+                                this.offset += 2;
+                                return value;
+                            case 0xd1:
+                                value = this.view.getInt16(this.offset + 1);
+                                this.offset += 3;
+                                return value;
+                            case 0xd2:
+                                value = this.view.getInt32(this.offset + 1);
+                                this.offset += 5;
+                                return value;
+                            case 0xd3:
+                                var high = this.view.getInt32(this.offset + 1);
+                                var low = this.view.getUint32(this.offset + 5);
+                                value = high * 0x100000000 + low;
+                                this.offset += 9;
+                                return value;
+                            case 0xde:
+                                length = this.view.getUint16(this.offset + 1);
+                                this.offset += 3;
+                                return this.map(length);
+                            case 0xdf:
+                                length = this.view.getUint32(this.offset + 1);
+                                this.offset += 5;
+                                return this.map(length);
+                            case 0xdc:
+                                length = this.view.getUint16(this.offset + 1);
+                                this.offset += 3;
+                                return this.array(length);
+                            case 0xdd:
+                                length = this.view.getUint32(this.offset + 1);
+                                this.offset += 5;
+                                return this.array(length);
+                            case 0xca:
+                                value = this.view.getFloat32(this.offset + 1);
+                                this.offset += 5;
+                                return value;
+                            case 0xcb:
+                                value = this.view.getFloat64(this.offset + 1);
+                                this.offset += 9;
+                                return value;
+                        }
+                        throw new Error("Unknown type 0x" + type.toString(16));
+                    };
+                    return Decoder;
+                })();
+                function _encode(value, view, offset) {
+                    var type = typeof value;
+                    if (type === "string") {
+                        var length = utf8ByteCount(value);
+                        if (length < 0x20) {
+                            view.setUint8(offset, length | 0xa0);
+                            utf8Write(view, offset + 1, value);
+                            return 1 + length;
+                        }
+                        if (length < 0x100) {
+                            view.setUint8(offset, 0xd9);
+                            view.setUint8(offset + 1, length);
+                            utf8Write(view, offset + 2, value);
+                            return 2 + length;
+                        }
+                        if (length < 0x10000) {
+                            view.setUint8(offset, 0xda);
+                            view.setUint16(offset + 1, length);
+                            utf8Write(view, offset + 3, value);
+                            return 3 + length;
+                        }
+                        if (length < 0x100000000) {
+                            view.setUint8(offset, 0xdb);
+                            view.setUint32(offset + 1, length);
+                            utf8Write(view, offset + 5, value);
+                            return 5 + length;
+                        }
+                    }
+                    if (value instanceof ArrayBuffer) {
+                        var length = value.byteLength;
+                        if (length < 0x100) {
+                            view.setUint8(offset, 0xc4);
+                            view.setUint8(offset + 1, length);
+                            (new Uint8Array(view.buffer)).set(new Uint8Array(value), offset + 2);
+                            return 2 + length;
+                        }
+                        if (length < 0x10000) {
+                            view.setUint8(offset, 0xc5);
+                            view.setUint16(offset + 1, length);
+                            (new Uint8Array(view.buffer)).set(new Uint8Array(value), offset + 3);
+                            return 3 + length;
+                        }
+                        if (length < 0x100000000) {
+                            view.setUint8(offset, 0xc6);
+                            view.setUint32(offset + 1, length);
+                            (new Uint8Array(view.buffer)).set(new Uint8Array(value), offset + 5);
+                            return 5 + length;
+                        }
+                    }
+                    if (type === "number") {
+                        if ((value << 0) !== value) {
+                            view.setUint8(offset, 0xcb);
+                            view.setFloat64(offset + 1, value);
+                            return 9;
+                        }
+                        if (value >= 0) {
+                            if (value < 0x80) {
+                                view.setUint8(offset, value);
+                                return 1;
+                            }
+                            if (value < 0x100) {
+                                view.setUint8(offset, 0xcc);
+                                view.setUint8(offset + 1, value);
+                                return 2;
+                            }
+                            if (value < 0x10000) {
+                                view.setUint8(offset, 0xcd);
+                                view.setUint16(offset + 1, value);
+                                return 3;
+                            }
+                            if (value < 0x100000000) {
+                                view.setUint8(offset, 0xce);
+                                view.setUint32(offset + 1, value);
+                                return 5;
+                            }
+                            throw new Error("Number too big 0x" + value.toString(16));
+                        }
+                        if (value >= -0x20) {
+                            view.setInt8(offset, value);
+                            return 1;
+                        }
+                        if (value >= -0x80) {
+                            view.setUint8(offset, 0xd0);
+                            view.setInt8(offset + 1, value);
+                            return 2;
+                        }
+                        if (value >= -0x8000) {
+                            view.setUint8(offset, 0xd1);
+                            view.setInt16(offset + 1, value);
+                            return 3;
+                        }
+                        if (value >= -0x80000000) {
+                            view.setUint8(offset, 0xd2);
+                            view.setInt32(offset + 1, value);
+                            return 5;
+                        }
+                        throw new Error("Number too small -0x" + (-value).toString(16).substr(1));
+                    }
+                    if (type === "undefined") {
+                        view.setUint8(offset, 0xd4);
+                        view.setUint8(offset + 1, 0);
+                        view.setUint8(offset + 2, 0);
+                        return 3;
+                    }
+                    if (value === null) {
+                        view.setUint8(offset, 0xc0);
+                        return 1;
+                    }
+                    if (type === "boolean") {
+                        view.setUint8(offset, value ? 0xc3 : 0xc2);
+                        return 1;
+                    }
+                    if (type === "object") {
+                        var length, size = 0;
+                        var isArray = Array.isArray(value);
+                        if (isArray) {
+                            length = value.length;
+                        }
+                        else {
+                            var keys = Object.keys(value);
+                            length = keys.length;
+                        }
+                        var size;
+                        if (length < 0x10) {
+                            view.setUint8(offset, length | (isArray ? 0x90 : 0x80));
+                            size = 1;
+                        }
+                        else if (length < 0x10000) {
+                            view.setUint8(offset, isArray ? 0xdc : 0xde);
+                            view.setUint16(offset + 1, length);
+                            size = 3;
+                        }
+                        else if (length < 0x100000000) {
+                            view.setUint8(offset, isArray ? 0xdd : 0xdf);
+                            view.setUint32(offset + 1, length);
+                            size = 5;
+                        }
+                        if (isArray) {
+                            for (var i = 0; i < length; i++) {
+                                size += _encode(value[i], view, offset + size);
+                            }
+                        }
+                        else {
+                            for (var i = 0; i < length; i++) {
+                                var key = keys[i];
+                                size += _encode(key, view, offset + size);
+                                size += _encode(value[key], view, offset + size);
+                            }
+                        }
+                        return size;
+                    }
+                    throw new Error("Unknown type " + type);
+                }
+                function encodedSize(value) {
+                    var type = typeof value;
+                    if (type === "string") {
+                        var length = utf8ByteCount(value);
+                        if (length < 0x20) {
+                            return 1 + length;
+                        }
+                        if (length < 0x100) {
+                            return 2 + length;
+                        }
+                        if (length < 0x10000) {
+                            return 3 + length;
+                        }
+                        if (length < 0x100000000) {
+                            return 5 + length;
+                        }
+                    }
+                    if (value instanceof ArrayBuffer) {
+                        var length = value.byteLength;
+                        if (length < 0x100) {
+                            return 2 + length;
+                        }
+                        if (length < 0x10000) {
+                            return 3 + length;
+                        }
+                        if (length < 0x100000000) {
+                            return 5 + length;
+                        }
+                    }
+                    if (type === "number") {
+                        if (value << 0 !== value)
+                            return 9;
+                        if (value >= 0) {
+                            if (value < 0x80)
+                                return 1;
+                            if (value < 0x100)
+                                return 2;
+                            if (value < 0x10000)
+                                return 3;
+                            if (value < 0x100000000)
+                                return 5;
+                            if (value < 0x10000000000000000)
+                                return 9;
+                            throw new Error("Number too big 0x" + value.toString(16));
+                        }
+                        if (value >= -0x20)
+                            return 1;
+                        if (value >= -0x80)
+                            return 2;
+                        if (value >= -0x8000)
+                            return 3;
+                        if (value >= -0x80000000)
+                            return 5;
+                        if (value >= -0x8000000000000000)
+                            return 9;
+                        throw new Error("Number too small -0x" + value.toString(16).substr(1));
+                    }
+                    if (type === "undefined")
+                        return 3;
+                    if (type === "boolean" || value === null)
+                        return 1;
+                    if (type === "object") {
+                        var length, size = 0;
+                        if (Array.isArray(value)) {
+                            length = value.length;
+                            for (var i = 0; i < length; i++) {
+                                size += encodedSize(value[i]);
+                            }
+                        }
+                        else {
+                            var keys = Object.keys(value);
+                            length = keys.length;
+                            for (var i = 0; i < length; i++) {
+                                var key = keys[i];
+                                size += encodedSize(key) + encodedSize(value[key]);
+                            }
+                        }
+                        if (length < 0x10) {
+                            return 1 + size;
+                        }
+                        if (length < 0x10000) {
+                            return 3 + size;
+                        }
+                        if (length < 0x100000000) {
+                            return 5 + size;
+                        }
+                        throw new Error("Array or object too long 0x" + length.toString(16));
+                    }
+                    throw new Error("Unknown type " + type);
+                }
+                function encode(value) {
+                    var buffer = new ArrayBuffer(encodedSize(value));
+                    var view = new DataView(buffer);
+                    _encode(value, view, 0);
+                    return buffer;
+                }
+                msgpack.encode = encode;
+                ;
+                function decode(buffer) {
+                    var view = new DataView(buffer);
+                    var decoder = new Decoder(view);
+                    var value = decoder.parse();
+                    if (decoder.offset !== buffer.byteLength)
+                        throw new Error((buffer.byteLength - decoder.offset) + " trailing bytes");
+                    return value;
+                }
+                msgpack.decode = decode;
+            })(msgpack = assets.msgpack || (assets.msgpack = {}));
+        })(assets = graphics.assets || (graphics.assets = {}));
+    })(graphics = acid.graphics || (acid.graphics = {}));
+})(acid || (acid = {}));
+var acid;
+(function (acid) {
+    var graphics;
+    (function (graphics) {
+        var assets;
+        (function (assets) {
             function load_json(url) {
                 return new acid.Task(function (resolve, reject) {
                     var loader = new THREE.JSONLoader();
@@ -889,6 +1439,20 @@ var acid;
                     });
                 });
             }
+            function load_msgpack(url) {
+                return new acid.Task(function (resolve, reject) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', url, true);
+                    xhr.responseType = 'arraybuffer';
+                    xhr.addEventListener("load", function (e) {
+                        var decoded = assets.msgpack.decode(xhr.response);
+                        var loader = new THREE.ObjectLoader();
+                        var scene = loader.parse(decoded);
+                        resolve(scene);
+                    }, false);
+                    xhr.send();
+                });
+            }
             function load_texture(url) {
                 return new acid.Task(function (resolve, reject) {
                     var loader = new THREE.TextureLoader();
@@ -903,6 +1467,7 @@ var acid;
                         case "texture": return load_texture(urls);
                         case "json": return load_json(urls);
                         case "scene": return load_scene(urls);
+                        case "msgpack": return load_msgpack(urls);
                         default: return new acid.Task(function (resolve, reject) {
                             return reject('unknown type');
                         });
@@ -913,6 +1478,7 @@ var acid;
                         case "texture": return acid.Task.all(urls.map(load_texture));
                         case "json": return acid.Task.all(urls.map(load_json));
                         case "scene": return acid.Task.all(urls.map(load_scene));
+                        case "msgpack": return acid.Task.all(urls.map(load_msgpack));
                         default: return new acid.Task(function (resolve, reject) {
                             return reject('unknown type');
                         });
