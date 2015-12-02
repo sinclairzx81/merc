@@ -73,13 +73,14 @@ module acid.loop {
 		if(!running) {
 			running = true;
 			var step = () => {
+				var now     = new Date();
+				var time    = now.getTime();				
 				//-------------------------------
 				// process update handlers
 				//-------------------------------
-				update_handlers.forEach(function (handler) {
-					var now     = new Date();
-					var delta   = now.getTime() - handler.last.getTime();
-					var elapsed = now.getTime() - handler.started.getTime();
+				update_handlers.forEach(handler => {
+					var delta   = time - handler.last.getTime();
+					var elapsed = time - handler.started.getTime();
 					handler.last = now
 					handler.callback({
 						elapsed   : delta,
@@ -89,10 +90,9 @@ module acid.loop {
 				//-------------------------------
 				// process render handlers
 				//-------------------------------
-				render_handlers.forEach(function (handler) {
-					var now     = new Date();
-					var delta   = now.getTime() - handler.last.getTime();
-					var elapsed = now.getTime() - handler.started.getTime();
+				render_handlers.forEach(handler => {
+					var delta   = time - handler.last.getTime();
+					var elapsed = time - handler.started.getTime();
 					handler.last = now
 					handler.callback({
 						elapsed   : delta,
