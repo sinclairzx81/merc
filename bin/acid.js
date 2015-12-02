@@ -209,10 +209,11 @@ var acid;
             if (!running) {
                 running = true;
                 var step = function () {
+                    var now = new Date();
+                    var time = now.getTime();
                     update_handlers.forEach(function (handler) {
-                        var now = new Date();
-                        var delta = now.getTime() - handler.last.getTime();
-                        var elapsed = now.getTime() - handler.started.getTime();
+                        var delta = time - handler.last.getTime();
+                        var elapsed = time - handler.started.getTime();
                         handler.last = now;
                         handler.callback({
                             elapsed: delta,
@@ -220,9 +221,8 @@ var acid;
                         });
                     });
                     render_handlers.forEach(function (handler) {
-                        var now = new Date();
-                        var delta = now.getTime() - handler.last.getTime();
-                        var elapsed = now.getTime() - handler.started.getTime();
+                        var delta = time - handler.last.getTime();
+                        var elapsed = time - handler.started.getTime();
                         handler.last = now;
                         handler.callback({
                             elapsed: delta,

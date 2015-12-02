@@ -51,7 +51,6 @@ acid.define([], function() {
 			"showroom/assets/stage-floor.jpg",
 			"showroom/assets/stage-panel.jpg",
 		]).then(function(textures) {
-			
 			//-------------------------------
 			// environment
 			//-------------------------------
@@ -161,7 +160,6 @@ acid.define([], function() {
 	var motion    = new THREE.Vector3(0, 0, 0)
 	var pos       = new THREE.Vector3(-15, 4, -15)
 	var firstpass = true;
-	
 	return {
 		update : function(time) {
 			if(scenes.scene) {
@@ -198,12 +196,26 @@ acid.define([], function() {
 					cameras.camera.lookAt(target);			
 					cameras.camera.position.set(position.x,  position.y, position.z);					
 				} else {
+					
 					var transform =  animation.get(time, true)
-					cameras.camera.up = transform.up
-					cameras.camera.lookAt(transform.target);			
-					cameras.camera.position.set(transform.position.x,  
+					var camera    = cameras.camera;
+					camera.position.set(transform.position.x,  
 												transform.position.y, 
 												transform.position.z);					
+					camera.up.set(transform.up.x,  
+										  transform.up.y, 
+										  transform.up.z);
+					camera.lookAt(transform.target);			
+					camera.updateMatrixWorld()
+					camera.updateProjectionMatrix();
+					/*
+					var ang = time * 0.01
+					camera.up = new THREE.Vector3(0, 1, 0);
+					camera.lookAt(new THREE.Vector3(0, 0, 0));			
+					camera.position.set(Math.cos(ang * 3.14 / 180) * 10,
+										2.0, 
+										Math.sin(ang * 3.14 / 180) * 10);	
+					*/								
 				}
 
 			}
