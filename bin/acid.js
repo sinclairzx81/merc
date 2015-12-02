@@ -461,9 +461,6 @@ var acid;
         animation.lerp2 = lerp2;
         function lerp3(src, dst, amount) {
             var delta = new THREE.Vector3(dst.x - src.x, dst.y - src.y, dst.z - src.z);
-            if (amount == NaN) {
-                throw Error("ok");
-            }
             return new THREE.Vector3(src.x + (delta.x * amount), src.y + (delta.y * amount), src.z + (delta.z * amount));
         }
         animation.lerp3 = lerp3;
