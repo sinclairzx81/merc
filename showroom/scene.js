@@ -208,16 +208,26 @@ acid.define([], function() {
 
 			}
 		},
+<<<<<<< HEAD
 		render : function(renderer) {
 			if(scenes.scene) {
 				renderer.setClearColor(0xFFFFFF)	
+=======
+		render : function(app) {
+			if(scenes.scene) {
+				app.renderer.setClearColor(0xCCCCCC)	
+>>>>>>> master
 				
 				if(firstpass) {
 					//---------------------------------------
 					// render car environment map
 					//---------------------------------------
 					scenes.scene.getObjectByName("car").visible = false;						
+<<<<<<< HEAD
 					scenes.scene.getObjectByName("car-environment-cubemap").updateCubeMap( renderer, scenes.scene );
+=======
+					scenes.scene.getObjectByName("car-environment-cubemap").updateCubeMap( app.renderer, scenes.scene );
+>>>>>>> master
 					scenes.scene.getObjectByName("car").visible = true;
 					firstpass = false						
 				}
@@ -235,7 +245,11 @@ acid.define([], function() {
 				scenes.scene.getObjectByName("room-floor").visible  = true;	
 				scenes.scene.getObjectByName("stage-floor").visible = true;
 								
+<<<<<<< HEAD
 				renderer.render(scenes.scene, cameras.camera, targets.scene, true)				
+=======
+				app.renderer.render(scenes.scene, cameras.camera, targets.scene, true)				
+>>>>>>> master
 			}
 
 			return targets;
